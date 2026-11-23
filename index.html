@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Not quite my tempo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a hard-nosed band director grading your take; funny because it is so serious.
+   IDEA: the rehearsal-room verdict: Fletcher's raised hand, then the marked-up score.
+   PICTURE: the meme as the verdict card, a big grade beside it; tempo chart below.
+   COLOUR and TYPE: practice-room black, bone white, blood red = rushing, steel blue = dragging; Black Han Sans + Anton.
+   LAYOUT: title, verdict hero, controls, chart, "rushing or dragging?" list. */
+:root{color-scheme:dark;--bg:#0d0b0a;--card:#171412;--ink:#f1ece4;--mute:#a39b91;--line:#2e2925;--band:#231f1b;--fast:#e3262e;--slow:#5b8cff}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:radial-gradient(120% 60% at 70% 0%,#241a14 0%,var(--bg) 60%) fixed,var(--bg);color:var(--ink);font:16px/1.6 'Noto Sans KR',system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(20px,3.5vw,48px) max(5vw,16px);max-width:1240px;margin:0 auto}
+h1{font:400 clamp(40px,8vw,72px)/1 Anton,sans-serif;letter-spacing:.01em;margin:0 0 8px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--fast)}
+.sub{color:var(--mute);margin:0 0 22px;max-width:60ch}
+.hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);background:#000;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:18px}
+.shot{position:relative;overflow:hidden;background:#000;display:flex;align-items:center}
+.shot img{display:block;width:100%;height:auto;transition:filter .4s}
+.hero.pass .shot img{filter:grayscale(1) brightness(.55)}
+.stamp{position:absolute;left:50%;top:46%;translate:-50% -50%;rotate:-12deg;border:4px solid var(--fast);color:var(--fast);font:400 clamp(28px,5vw,46px)/1 'Black Han Sans';padding:6px 18px;border-radius:8px;display:none;background:#0008}
+.hero.pass .stamp{display:block}
+.verdict{padding:clamp(16px,2.4vw,28px);display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--card)}
+.grade{font:400 clamp(64px,10vw,104px)/.9 Anton,sans-serif;letter-spacing:.01em}
+.grade small{font-size:.38em;color:var(--mute);margin-left:6px}
+.line{font:400 clamp(20px,2.6vw,26px)/1.25 'Black Han Sans';text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--mute);font-size:14px;margin-top:6px}
+.meta b{color:var(--ink);font:400 18px Anton,sans-serif;letter-spacing:.02em;margin-right:4px}
+.shake{animation:shake .5s 2}
+@keyframes shake{0%,100%{translate:0}20%{translate:-6px 0}40%{translate:5px 0}60%{translate:-3px 0}80%{translate:2px 0}}
+.ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:16px}
+.ctrl label{display:flex;flex-direction:column;font-size:13px;color:var(--mute);gap:4px}
+button,.file,input,select{font:inherit;font-size:16px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:0 14px}
+input[type=number]{width:92px}input[type=range]{padding:0;border:0;background:none;width:140px;accent-color:var(--fast)}
+.ctrl .file{display:inline-flex;flex-direction:row;align-items:center;background:var(--fast);border-color:var(--fast);color:#fff;font:400 18px 'Black Han Sans';cursor:pointer;padding:0 18px}
+.file input{display:none}[hidden]{display:none!important}
+button{cursor:pointer}button:focus-visible,.file:focus-within,input:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.seg2{display:flex}.seg2 button{border-radius:0;padding:0 12px}.seg2 button:first-child{border-radius:10px 0 0 10px}.seg2 button:last-child{border-radius:0 10px 10px 0;margin-left:-1px}
+.fig{position:relative;min-height:320px;height:40vh;background:var(--card);border:1px solid var(--line);border-radius:14px;cursor:crosshair}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--mute);margin:8px 2px 0}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.status{font-size:14px;color:var(--mute);margin:6px 2px 12px;min-height:22px}
+audio{width:100%;display:block}.player{margin:4px 0 26px}
+.rec{background:var(--card);border-color:var(--fast);color:var(--ink);font:400 18px 'Black Han Sans';padding:0 18px}.rec.on{background:var(--fast);color:#fff;animation:pulse 1s infinite}@keyframes pulse{50%{opacity:.6}}
+h2{font:400 clamp(24px,3.4vw,32px)/1.15 'Black Han Sans';margin:6px 0 4px}
+.h2s{color:var(--mute);margin:0 0 12px;font-size:14px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:15px}th{font-size:13px;color:var(--mute);font-weight:500}
+td.n{text-align:right;font:400 17px Anton,sans-serif;letter-spacing:.03em;white-space:nowrap}
+tbody tr{cursor:pointer}tbody tr:hover{background:var(--band)}td.q{color:var(--mute);font-size:14px}
+.tag{display:inline-block;padding:2px 10px;border-radius:99px;font-size:13px;font-weight:700;color:#fff;white-space:nowrap}.tag.f{background:var(--fast)}.tag.s{background:var(--slow)}
+.empty{padding:16px;color:var(--mute);background:var(--card);border:1px solid var(--line);border-radius:14px}
+.notes{color:var(--mute);font-size:15px;max-width:70ch;padding-left:20px}.notes li{margin:5px 0}
+.toast{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));width:min(300px,78vw);background:#000;border:2px solid var(--fast);border-radius:12px;overflow:hidden;box-shadow:0 12px 40px #000c;translate:0 140%;transition:translate .28s cubic-bezier(.2,1.4,.4,1);z-index:9}
+.toast.on{translate:0 0}.toast img{display:block;width:100%}.toast p{margin:0;padding:8px 12px;font:400 17px 'Black Han Sans'}
+.toast.s{border-color:var(--slow)}
+.count{font:400 22px Anton,sans-serif;color:var(--fast);letter-spacing:.08em}
+@media(max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){
+.band{padding:18px 14px 110px}
+.sub{font-size:15px;margin-bottom:16px}
+.verdict{padding:14px 16px 16px;gap:2px}
+.grade{font-size:72px}.line{font-size:20px}.meta{gap:4px 14px;font-size:13px}
+.ctrl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.ctrl .file,.rec{grid-column:1/-1;justify-content:center;min-height:52px;font-size:20px}
+.ctrl label input,.ctrl label select{width:100%}
+.ctrl input[type=range]{width:100%;min-height:44px}
+.seg2 button{flex:1}
+.player{position:fixed;left:0;right:0;bottom:0;margin:0;padding:10px 12px max(10px,env(safe-area-inset-bottom));background:#0d0b0aee;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);z-index:8}
+.toast{bottom:calc(84px + env(safe-area-inset-bottom));left:50%;right:auto;translate:-50% 180%}.toast.on{translate:-50% 0}
+h2{font-size:24px}
+.fig{height:280px;min-height:280px}table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px}.stack td{display:flow-root;border:0;padding:3px 12px;padding-inline-start:104px;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:96px;margin-inline-start:-104px;line-height:1.9;color:var(--mute);font:13px 'Noto Sans KR'}.stack td:empty{display:none}}
+@media(prefers-reduced-motion:reduce){.shake{animation:none}.toast{transition:none}}
+</style><script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script></head><body>
+<div class="band">
+<h1>Not quite <em>my tempo.</em></h1>
+<p class="sub">녹음을 올리면 박마다 템포를 재서 느려진 곳과 빨라진 곳을 짚어 줘요. 분석은 이 기기 안에서만 해요. 판정은 좀 가혹하게 합니다.</p>
+
+<section class="hero" id="hero">
+  <div class="shot"><img src="fletcher.jpg" alt="영화 위플래시에서 플레처가 손을 들어 연주를 멈추게 하는 장면, 자막 ‘Not quite my tempo.’"><div class="stamp">통과</div></div>
+  <div class="verdict">
+    <div class="grade" id="grade">–<small>%</small></div>
+    <div class="line" id="line">녹음을 올려. 들어 보자.</div>
+    <div class="meta"><span><b id="rRef">–</b>기준 BPM</span><span><b id="rJit">–</b>박 흔들림</span><span><b id="rSeg">–</b>걸린 구간</span></div>
+  </div>
+</section>
+
+<div class="ctrl">
+  <button type="button" class="rec" id="rec" hidden>● 바로 녹음</button><label class="file">녹음 올리기<input type="file" id="file" accept="audio/*,video/*,.m4a,.mp3,.wav,.aac,.caf"></label>
+  <label>대략 BPM<input type="number" id="hint" value="110" min="40" max="240" inputmode="numeric"></label>
+  <label>기준 템포<select id="refMode"><option value="med">내 평균</option><option value="fix">직접 입력</option></select></label>
+  <label id="fixWrap" hidden>기준 BPM<input type="number" id="fix" value="100" min="40" max="240" step="0.5" inputmode="decimal"></label>
+  <label><span>봐주는 범위 ±<output id="thrOut">2.5</output>%</span><input type="range" id="thr" min="1" max="6" step="0.5" value="2.5"></label>
+  <label>박 보정<span class="seg2"><button id="half" type="button">÷2</button><button id="dbl" type="button">×2</button></span></label>
+</div>
+
+<div class="fig" id="fig"><svg id="svg" role="img" aria-label="시간에 따른 BPM 그래프"></svg></div>
+<div class="legend"><span><i style="background:var(--fast)"></i>빠름</span><span><i style="background:var(--slow)"></i>느림</span><span><i style="background:var(--band);outline:1px solid var(--line)"></i>봐주는 범위</span></div>
+<div class="status" id="status"></div>
+<div class="player"><audio id="aud" controls preload="auto"></audio></div>
+
+<h2>빨랐어, 느렸어?</h2>
+<p class="h2s">줄을 누르면 그 2초 전부터 다시 틀어 줘요. 재생 중에 그 구간에 들어가면 그가 나타나요.</p>
+<div id="list"></div>
+
+<h2 style="margin-top:30px">리허설 규칙</h2>
+<ul class="notes">
+  <li>아이폰·아이패드: 음성 메모로 녹음 → 공유 → ‘파일에 저장’ → 여기서 ‘녹음 올리기’. Claude 안에서 열면 마이크가 막혀 있고, 직접 올린 사이트(GitHub Pages 등)에서 열면 ‘바로 녹음’ 버튼이 생겨요.</li>
+  <li>BPM이 절반이나 두 배로 나오면 ÷2, ×2로 맞추세요. ‘대략 BPM’을 처음에 넣어 두면 덜 틀려요.</li>
+  <li>필인, 브레이크, 하프타임에서는 박을 잘못 잡아 그래프가 튈 수 있어요. 그분은 억울한 판정도 해요.</li>
+  <li>‘박 흔들림’은 앞뒤 8박이 만드는 선에서 박마다 몇 ms 벗어났는지를 재요. 템포는 맞는데 손이 들쭉날쭉한지 보는 숫자예요.</li>
+</ul>
+</div>
+
+<div class="toast" id="toast" aria-live="polite"><img src="fletcher.jpg" alt=""><p id="toastTxt"></p></div>
+
+<script>
+// ---- tempo analysis core (shared by page + node test) ----
+const TA = (() => {
+  const N = 1024, H = 128;
+
+  function fft(re, im) {
+    const n = re.length;
+    for (let i = 1, j = 0; i < n; i++) {
+      let bit = n >> 1;
+      for (; j & bit; bit >>= 1) j ^= bit;
+      j ^= bit;
+      if (i < j) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; }
+    }
+    for (let len = 2; len <= n; len <<= 1) {
+      const ang = -2 * Math.PI / len, wr = Math.cos(ang), wi = Math.sin(ang), h = len >> 1;
+      for (let i = 0; i < n; i += len) {
+        let cr = 1, ci = 0;
+        for (let k = 0; k < h; k++) {
+          const a = i + k, b = a + h;
+          const xr = re[b] * cr - im[b] * ci, xi = re[b] * ci + im[b] * cr;
+          re[b] = re[a] - xr; im[b] = im[a] - xi; re[a] += xr; im[a] += xi;
+          const t = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = t;
+        }
+      }
+    }
+  }
+
+  // spectral-flux onset envelope
+  function onsetEnvelope(x, sr) {
+    const win = new Float32Array(N);
+    for (let i = 0; i < N; i++) win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / N);
+    const nb = Math.min(N / 2, Math.round(10000 / (sr / N)));
+    const nf = Math.max(0, Math.floor((x.length - N) / H) + 1);
+    const env = new Float32Array(nf);
+    const re = new Float64Array(N), im = new Float64Array(N);
+    let prev = new Float32Array(nb), cur = new Float32Array(nb);
+    for (let f = 0; f < nf; f++) {
+      const o = f * H;
+      for (let i = 0; i < N; i++) { re[i] = x[o + i] * win[i]; im[i] = 0; }
+      fft(re, im);
+      let s = 0;
+      for (let k = 1; k < nb; k++) {
+        const m = Math.log1p(100 * Math.hypot(re[k], im[k]));
+        cur[k] = m;
+        const d = m - prev[k];
+        if (d > 0) s += k < nb / 8 ? d * 2 : d; // lows (kick/snare body) count double
+      }
+      env[f] = f ? s : 0;
+      const t = prev; prev = cur; cur = t;
+    }
+    // remove slow trend, rectify, normalise
+    const fps = sr / H, w = Math.round(0.4 * fps), out = new Float32Array(nf);
+    let acc = 0;
+    for (let i = 0; i < nf; i++) {
+      acc += env[i]; if (i > 2 * w) acc -= env[i - 2 * w - 1];
+      const c = i - w; if (c >= 0) out[c] = env[c] - acc / Math.min(i + 1, 2 * w + 1);
+    }
+    let m = 0, v = 0;
+    for (let i = 0; i < nf; i++) { if (out[i] < 0) out[i] = 0; m += out[i]; }
+    m /= nf || 1;
+    for (let i = 0; i < nf; i++) v += (out[i] - m) ** 2;
+    const sd = Math.sqrt(v / (nf || 1)) || 1;
+    for (let i = 0; i < nf; i++) out[i] /= sd;
+    return { env: out, fps };
+  }
+
+  function estimatePeriod(env, fps, hint, strict) {
+    const lo = Math.floor(fps * 60 / 220), hi = Math.ceil(fps * 60 / 50);
+    const n = Math.min(env.length, Math.round(fps * 90)); // first 90s is plenty
+    let best = -1, bl = lo, sc = [];
+    for (let L = lo; L <= hi; L++) {
+      let s = 0;
+      for (let t = 0; t + L < n; t++) s += env[t] * env[t + L];
+      s /= (n - L);
+      const bpm = 60 * fps / L;
+      const w = Math.exp(-0.5 * (Math.log2(bpm / hint) / (strict ? 0.25 : 0.9)) ** 2);
+      sc[L] = s * w;
+      if (sc[L] > best) { best = sc[L]; bl = L; }
+    }
+    const a = sc[bl - 1] ?? best, c = sc[bl + 1] ?? best, d = a - 2 * best + c;
+    return bl + (d < 0 ? 0.5 * (a - c) / d : 0);
+  }
+
+  function trackBeats(env, P, tight) {
+    const n = env.length, score = new Float64Array(n), back = new Int32Array(n).fill(-1);
+    for (let t = 0; t < n; t++) {
+      let best = -Infinity, bp = -1;
+      const lo = Math.max(0, t - Math.round(2 * P)), hi = t - Math.round(P / 2);
+      for (let p = lo; p <= hi; p++) {
+        const v = score[p] - tight * Math.log((t - p) / P) ** 2;
+        if (v > best) { best = v; bp = p; }
+      }
+      if (bp >= 0 && best > 0) { score[t] = env[t] + best; back[t] = bp; } else score[t] = env[t];
+    }
+    let t = n - 1, bs = -Infinity;
+    for (let i = Math.max(0, n - Math.round(1.5 * P)); i < n; i++) if (score[i] > bs) { bs = score[i]; t = i; }
+    const beats = [];
+    while (t >= 0) { beats.push(t); t = back[t]; }
+    return beats.reverse();
+  }
+
+  function analyze(x, sr, opt = {}) {
+    const hint = opt.hint || 110;
+    const { env, fps } = onsetEnvelope(x, sr);
+    const P = estimatePeriod(env, fps, hint, !!opt.strict);
+    let bf = trackBeats(env, P, opt.tight ?? 40);
+    // refine each beat to the onset peak (sub-frame)
+    const r = Math.round(0.035 * fps);
+    let beats = bf.map(b => {
+      let m = b, mv = -1;
+      for (let i = Math.max(1, b - r); i <= Math.min(env.length - 2, b + r); i++) if (env[i] > mv) { mv = env[i]; m = i; }
+      const a = env[m - 1] ?? 0, c = env[m + 1] ?? 0, d = a - 2 * env[m] + c;
+      const off = d < 0 ? 0.5 * (a - c) / d : 0;
+      return { t: (m + off) / fps + N / (2 * sr), s: mv };
+    });
+    // trim weak beats at head/tail (silence, count-in noise)
+    const med = beats.map(b => b.s).sort((a, b) => a - b)[beats.length >> 1] || 0;
+    while (beats.length && beats[0].s < 0.3 * med) beats.shift();
+    while (beats.length && beats[beats.length - 1].s < 0.3 * med) beats.pop();
+    // local tempo = regression slope over +-W beats; residual = timing wobble
+    const W = opt.win || 4, nB = beats.length;
+    const out = beats.map((b, i) => {
+      const a = Math.max(0, i - W), z = Math.min(nB - 1, i + W);
+      let sx = 0, sy = 0, sxx = 0, sxy = 0, k = 0;
+      for (let j = a; j <= z; j++) { sx += j; sy += beats[j].t; sxx += j * j; sxy += j * beats[j].t; k++; }
+      const sl = (k * sxy - sx * sy) / (k * sxx - sx * sx), ic = (sy - sl * sx) / k;
+      return { t: b.t, bpm: 60 / sl, res: (b.t - (ic + sl * i)) * 1000 };
+    });
+    return { beats: out, period: P, fps, dur: x.length / sr };
+  }
+
+  // group beats whose tempo is off the reference into segments
+  function segments(beats, ref, thr, mult) {
+    const segs = []; let cur = null;
+    const dev = b => (b.bpm * mult - ref) / ref * 100;
+    beats.forEach((b, i) => {
+      const d = dev(b), sign = d > thr ? 1 : d < -thr ? -1 : 0;
+      if (sign && cur && cur.sign === sign && i - cur.end <= 2) cur.end = i;
+      else if (sign) { if (cur) segs.push(cur); cur = { sign, start: i, end: i }; }
+    });
+    if (cur) segs.push(cur);
+    return segs.filter(s => s.end - s.start >= 3).map(s => {
+      const bs = beats.slice(s.start, s.end + 1);
+      const ds = bs.map(dev), pk = s.sign > 0 ? Math.max(...ds) : Math.min(...ds);
+      return { ...s, t0: bs[0].t, t1: bs[bs.length - 1].t, n: bs.length,
+        avg: bs.reduce((a, b) => a + b.bpm * mult, 0) / bs.length, peak: pk };
+    });
+  }
+
+  // demo drum track with known drift
+  function synth(sr, plan, seed = 7) {
+    let s = seed; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+    const bpmAt = t => { for (const p of plan) if (t < p[0]) return p[1](t); return plan[plan.length - 1][1](t); };
+    const dur = plan[plan.length - 1][0], x = new Float32Array(Math.round(dur * sr)), truth = [];
+    let t = 0.6, k = 0;
+    const hit = (t0, kind, g) => {
+      const o = Math.round(t0 * sr), L = Math.round(0.35 * sr);
+      let lp = 0;
+      for (let i = 0; i < L && o + i < x.length; i++) {
+        const u = i / sr, n = rnd() * 2 - 1;
+        let v;
+        if (kind === 0) v = Math.sin(2 * Math.PI * (50 + 90 * Math.exp(-u * 40)) * u) * Math.exp(-u * 14) + n * 0.3 * Math.exp(-u * 200);
+        else if (kind === 1) v = (n * 0.8 + 0.4 * Math.sin(2 * Math.PI * 190 * u)) * Math.exp(-u * 22);
+        else { const hp = n - lp; lp = n; v = hp * 0.35 * Math.exp(-u * 70); }
+        x[o + i] += v * g;
+      }
+    };
+    while (t < dur - 0.5) {
+      const b = bpmAt(t), ib = 60 / b, j = (rnd() - 0.5) * 0.014;
+      truth.push({ t: t + j, bpm: b });
+      hit(t + j, k % 2 ? 1 : 0, k % 2 ? 0.7 : 0.9);
+      hit(t + j, 2, 0.5); hit(t + ib / 2 + j * 0.5, 2, 0.35);
+      t += ib; k++;
+    }
+    for (let i = 0; i < x.length; i++) x[i] = Math.tanh(x[i] * 0.8) * 0.8 + (rnd() - 0.5) * 0.02;
+    return { x, truth };
+  }
+
+  function wav(x, sr) {
+    const b = new ArrayBuffer(44 + x.length * 2), v = new DataView(b);
+    const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+    w(0, 'RIFF'); v.setUint32(4, 36 + x.length * 2, true); w(8, 'WAVE'); w(12, 'fmt ');
+    v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+    w(36, 'data'); v.setUint32(40, x.length * 2, true);
+    for (let i = 0; i < x.length; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, x[i])) * 32767, true);
+    return b;
+  }
+
+  const DEMO_PLAN = [
+    [24, () => 100],
+    [36, t => 100 - 5 * Math.min(1, (t - 24) / 6)],   // drag to ~95
+    [52, () => 100],
+    [60, t => 100 + 6 * Math.min(1, (t - 52) / 3)],   // rush to ~106
+    [80, () => 100]
+  ];
+
+  return { analyze, segments, synth, wav, DEMO_PLAN };
+})();
+
+{
+const $=id=>document.getElementById(id);
+const SR=22050;
+let res=null,mult=1,dur=0,url=null,isDemo=true,lastX=null,geo=null,lastSeg=null,toastT=0,countT=0;
+const fmt=t=>{t=Math.max(0,t);const m=Math.floor(t/60),s=Math.floor(t%60);return m+':'+String(s).padStart(2,'0')};
+const status=h=>$('status').innerHTML=h;
+
+const LINES=[
+  [97,'…이번엔 넘어간다.',true],
+  [90,'거의 다 왔어. 그런데 ‘거의’는 템포가 아니야.'],
+  [75,'Not quite my tempo. 다시.'],
+  [50,'빨랐어, 느렸어? 대답해.'],
+  [0,'처음부터. 카운트 다시 센다.']
+];
+const SEGLINE={f:['빨라졌잖아.','누가 앞질러 가래?','서두르지 마.'],s:['느려졌잖아.','왜 뒤로 처져?','따라와. 지금.']};
+
+function reference(){
+  if($('refMode').value==='fix')return +$('fix').value||100;
+  const b=res.beats.map(x=>x.bpm*mult).sort((a,b)=>a-b);return b[b.length>>1];
+}
+function verdict(pct){
+  const [_,txt,pass]=LINES.find(l=>pct>=l[0]);
+  $('grade').innerHTML=pct+'<small>%</small>';
+  $('line').textContent=txt;
+  const h=$('hero');h.classList.toggle('pass',!!pass);
+  h.classList.remove('shake');void h.offsetWidth;if(!pass&&pct<90)h.classList.add('shake');
+}
+function render(shake){
+  if(!res||!res.beats.length){$('list').innerHTML='<div class="empty">박을 못 찾았어요. 드럼이 또렷하게 들리는지, ‘대략 BPM’이 맞는지 확인해 주세요.</div>';$('line').textContent='드럼 소리가 안 들려. 다시 녹음해.';draw();return}
+  const ref=reference(),thr=+$('thr').value,bs=res.beats;
+  const segs=TA.segments(bs,ref,thr,mult);
+  const inR=bs.filter(b=>Math.abs((b.bpm*mult-ref)/ref*100)<=thr).length;
+  const jit=bs.map(b=>Math.abs(b.res)).sort((a,b)=>a-b)[bs.length>>1];
+  const pct=Math.round(inR/bs.length*100);
+  $('rRef').textContent=ref.toFixed(1);$('rJit').textContent=jit.toFixed(0)+'ms';$('rSeg').textContent=segs.length+'곳';
+  if(shake)verdict(pct);else{$('grade').innerHTML=pct+'<small>%</small>';$('line').textContent=LINES.find(l=>pct>=l[0])[1];$('hero').classList.toggle('pass',pct>=97)}
+  res.segs=segs;res.ref=ref;res.thr=thr;
+  $('list').innerHTML=segs.length?`<table class="stack"><thead><tr><th>구간</th><th>판정</th><th>평균 BPM</th><th>차이</th><th>길이</th><th>한마디</th></tr></thead><tbody>${segs.map((s,i)=>{const k=s.sign>0?'f':'s';return`<tr data-t="${s.t0}"><td class="n">${fmt(s.t0)}–${fmt(s.t1)}</td><td><span class="tag ${k}">${s.sign>0?'빠름':'느림'}</span></td><td class="n">${s.avg.toFixed(1)}</td><td class="n">${s.peak>0?'+':''}${s.peak.toFixed(1)}%</td><td class="n">${s.n}박</td><td class="q">${SEGLINE[k][i%3]}</td></tr>`}).join('')}</tbody></table>`
+    :'<div class="empty">걸린 구간이 없어요. 봐주는 범위를 좁혀 보세요. 그분은 그렇게 할 거예요.</div>';
+  draw();
+}
+function draw(){
+  const s=$('svg'),W=s.clientWidth,H=s.clientHeight;
+  if(!res||!res.beats.length){s.innerHTML='';return}
+  const narrow=W<520,L=narrow?44:50,R=12,T=14,B=26,bs=res.beats,ref=res.ref,thr=res.thr;
+  const devs=bs.map(b=>Math.abs(b.bpm*mult-ref)/ref*100);
+  const span=Math.min(25,Math.max(thr*2.4,Math.max(...devs)*1.15));
+  const y0=ref*(1-span/100),y1=ref*(1+span/100);
+  const X=t=>L+(W-L-R)*t/dur,Y=v=>T+(H-T-B)*(1-(v-y0)/(y1-y0)),cl=v=>Math.max(y0,Math.min(y1,v));
+  geo={L,R,W};
+  let g=`<rect x="${L}" y="${Y(ref*(1+thr/100))}" width="${W-L-R}" height="${Y(ref*(1-thr/100))-Y(ref*(1+thr/100))}" fill="var(--band)"/>`;
+  for(const sg of res.segs)g+=`<rect x="${X(sg.t0)}" y="${T}" width="${Math.max(3,X(sg.t1)-X(sg.t0))}" height="${H-T-B}" fill="${sg.sign>0?'var(--fast)':'var(--slow)'}" opacity=".2"/>`;
+  g+=`<line x1="${L}" x2="${W-R}" y1="${Y(ref)}" y2="${Y(ref)}" stroke="var(--mute)" stroke-dasharray="4 4"/>`;
+  for(const[v,l]of[[ref,ref.toFixed(0)],[ref*(1+thr/100),'+'+thr+'%'],[ref*(1-thr/100),'−'+thr+'%']])g+=`<text x="${L-6}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--mute)">${l}</text>`;
+  const step=dur>300?60:dur>120?30:dur>40?15:5;
+  for(let t=0;t<=dur;t+=step*(narrow&&dur/step>6?2:1))g+=`<text x="${X(t)}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--mute)">${fmt(t)}</text>`;
+  g+=`<polyline points="${bs.map(b=>X(b.t).toFixed(1)+','+Y(cl(b.bpm*mult)).toFixed(1)).join(' ')}" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>`;
+  for(const b of bs){const d=(b.bpm*mult-ref)/ref*100;if(Math.abs(d)>thr)g+=`<circle cx="${X(b.t)}" cy="${Y(cl(b.bpm*mult))}" r="2.8" fill="${d>0?'var(--fast)':'var(--slow)'}"/>`}
+  g+=`<line id="ph" x1="${L}" x2="${L}" y1="${T}" y2="${H-B}" stroke="#fff" stroke-width="1.5" opacity="0"/>`;
+  s.innerHTML=g;movePh();
+}
+function toast(sg){
+  const k=sg.sign>0?'f':'s',t=$('toast');
+  $('toastTxt').textContent=SEGLINE[k][res.segs.indexOf(sg)%3];
+  t.classList.toggle('s',k==='s');t.classList.add('on');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2400);
+}
+function movePh(){
+  const p=$('ph'),a=$('aud');if(!p||!geo||!dur)return;
+  const t=a.currentTime,x=geo.L+(geo.W-geo.L-geo.R)*t/dur;
+  p.setAttribute('x1',x);p.setAttribute('x2',x);p.setAttribute('opacity',t>0?1:0);
+  if(!a.paused&&res.segs){const sg=res.segs.find(s=>t>=s.t0&&t<=s.t1)||null;if(sg&&sg!==lastSeg)toast(sg);lastSeg=sg}
+}
+const ro=new ResizeObserver(draw);ro.observe($('fig'));
+function play(t){const a=$('aud');a.currentTime=Math.max(0,t);lastSeg=null;const p=a.play();if(p)p.catch(()=>{});movePh()}
+$('fig').addEventListener('click',e=>{if(!geo||!dur)return;const r=e.currentTarget.getBoundingClientRect();const t=(e.clientX-r.left-geo.L)/(geo.W-geo.L-geo.R)*dur;if(t>=0&&t<=dur)play(t)});
+$('list').addEventListener('click',e=>{const tr=e.target.closest('tr[data-t]');if(tr)play(+tr.dataset.t-2)});
+$('aud').addEventListener('timeupdate',movePh);$('aud').addEventListener('seeked',movePh);
+$('aud').addEventListener('play',()=>{const f=()=>{movePh();if(!$('aud').paused)requestAnimationFrame(f)};f()});
+$('toast').addEventListener('click',()=>$('toast').classList.remove('on'));
+
+function run(x){
+  lastX=x;
+  const words=['5,','6,','5, 6,','7,','8!'];let i=0;
+  clearInterval(countT);status('<span class="count">5,</span> 카운트 들어간다…');
+  countT=setInterval(()=>{i=(i+1)%words.length;status(`<span class="count">${words[i]}</span> 카운트 들어간다…`)},260);
+  setTimeout(()=>{
+    try{
+      const t0=performance.now();
+      res=TA.analyze(x,SR,{hint:+$('hint').value||110});
+      dur=res.dur;mult=1;clearInterval(countT);
+      status((isDemo?'예시: 가상의 드럼 녹음이에요. 0:27쯤 느려지고 0:53쯤 빨라지게 만들었어요. ':'')+`박 ${res.beats.length}개를 ${((performance.now()-t0)/1000).toFixed(1)}초 동안 들었어요.`);
+      render(true);
+    }catch(err){clearInterval(countT);status('분석하다 오류가 났어요: '+err.message)}
+  },400);
+}
+async function decode(file){
+  const buf=await file.arrayBuffer();
+  const AC=window.AudioContext||window.webkitAudioContext,ctx=new AC();
+  const ab=await new Promise((ok,no)=>ctx.decodeAudioData(buf,ok,no));
+  ctx.close&&ctx.close();
+  const OC=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+  const off=new OC(1,Math.ceil(ab.duration*SR),SR),src=off.createBufferSource();
+  src.buffer=ab;src.connect(off.destination);src.start();
+  return (await off.startRendering()).getChannelData(0);
+}
+$('file').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  status('파일을 여는 중…');
+  try{
+    const x=await decode(f);isDemo=false;
+    if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(f);$('aud').src=url;
+    run(x);
+  }catch(err){status('이 파일은 못 열었어요. m4a, mp3, wav로 다시 올려 주세요.')}
+  e.target.value='';
+});
+$('hint').addEventListener('change',()=>{if(lastX)run(lastX)});
+$('refMode').addEventListener('change',()=>{$('fixWrap').hidden=$('refMode').value!=='fix';render(true)});
+$('fix').addEventListener('change',()=>render(true));
+$('thr').addEventListener('input',()=>{$('thrOut').textContent=$('thr').value;render(false)});
+$('thr').addEventListener('change',()=>render(true));
+$('half').addEventListener('click',()=>{mult/=2;render(true)});
+$('dbl').addEventListener('click',()=>{mult*=2;render(true)});
+
+if(window.self===window.top&&navigator.mediaDevices&&window.MediaRecorder){
+  const b=$('rec');b.hidden=false;let mr=null,chunks=[];
+  b.addEventListener('click',async()=>{
+    if(mr&&mr.state==='recording'){mr.stop();return}
+    try{
+      const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+      chunks=[];mr=new MediaRecorder(st);
+      mr.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+      mr.onstop=async()=>{st.getTracks().forEach(t=>t.stop());b.classList.remove('on');b.textContent='● 바로 녹음';
+        const blob=new Blob(chunks,{type:mr.mimeType||'audio/mp4'});
+        try{status('녹음을 여는 중…');const x=await decode(blob);isDemo=false;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(blob);$('aud').src=url;run(x)}catch(err){status('녹음을 열지 못했어요. 다시 해 주세요.')}};
+      mr.start();b.classList.add('on');b.textContent='■ 멈추고 판정받기';status('녹음 중이에요. 다 쳤으면 버튼을 다시 누르세요.');
+    }catch(err){status('마이크를 쓸 수 없어요. 음성 메모로 녹음해서 올려 주세요.')}
+  });
+}
+
+const demo=TA.synth(SR,TA.DEMO_PLAN);
+url=URL.createObjectURL(new Blob([TA.wav(demo.x,SR)],{type:'audio/wav'}));$('aud').src=url;
+run(demo.x);
+}
+</script>
+</body></html>

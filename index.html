@@ -17,10 +17,10 @@ h1{font:400 clamp(40px,8vw,72px)/1 Anton,sans-serif;letter-spacing:.01em;margin:
 h1 em{font-style:normal;color:var(--fast)}
 .sub{color:var(--mute);margin:0 0 22px;max-width:60ch}
 .hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);background:#000;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:18px}
-.shot{position:relative;overflow:hidden;background:#000;display:flex;align-items:center}
-.shot img{display:block;width:100%;height:auto;transition:filter .4s}
-.hero.pass .shot img{filter:grayscale(1) brightness(.55)}
-.stamp{position:absolute;left:50%;top:46%;translate:-50% -50%;rotate:-12deg;border:4px solid var(--fast);color:var(--fast);font:400 clamp(28px,5vw,46px)/1 'Black Han Sans';padding:6px 18px;border-radius:8px;display:none;background:#0008}
+.shot{position:relative;overflow:hidden;background:#000;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
+.shot img{display:block;width:100%;height:100%;object-fit:contain}
+.shot img.pop{animation:pop .35s ease-out}@keyframes pop{from{scale:1.08;opacity:.3}}
+.stamp{position:absolute;right:6%;bottom:10%;translate:-50% -50%;rotate:-12deg;border:4px solid var(--fast);color:var(--fast);font:400 clamp(28px,5vw,46px)/1 'Black Han Sans';padding:6px 18px;border-radius:8px;display:none;background:#0008}
 .hero.pass .stamp{display:block}
 .verdict{padding:clamp(16px,2.4vw,28px);display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--card)}
 .grade{font:400 clamp(64px,10vw,104px)/.9 Anton,sans-serif;letter-spacing:.01em}
@@ -54,7 +54,7 @@ tbody tr{cursor:pointer}tbody tr:hover{background:var(--band)}td.q{color:var(--m
 .empty{padding:16px;color:var(--mute);background:var(--card);border:1px solid var(--line);border-radius:14px}
 .notes{color:var(--mute);font-size:15px;max-width:70ch;padding-left:20px}.notes li{margin:5px 0}
 .toast{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));width:min(300px,78vw);background:#000;border:2px solid var(--fast);border-radius:12px;overflow:hidden;box-shadow:0 12px 40px #000c;translate:0 140%;transition:translate .28s cubic-bezier(.2,1.4,.4,1);z-index:9}
-.toast.on{translate:0 0}.toast img{display:block;width:100%}.toast p{margin:0;padding:8px 12px;font:400 17px 'Black Han Sans'}
+.toast.on{translate:0 0}.toast img{display:block;width:100%;max-height:190px;object-fit:contain;background:#000}.toast p{margin:0;padding:8px 12px;font:400 17px 'Black Han Sans'}
 .toast.s{border-color:var(--slow)}
 .count{font:400 22px Anton,sans-serif;color:var(--fast);letter-spacing:.08em}
 @media(max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}}
@@ -79,7 +79,7 @@ h2{font-size:24px}
 <p class="sub">녹음을 올리면 박마다 템포를 재서 느려진 곳과 빨라진 곳을 짚어 줘요. 분석은 이 기기 안에서만 해요. 판정은 좀 가혹하게 합니다.</p>
 
 <section class="hero" id="hero">
-  <div class="shot"><img src="fletcher.jpg" alt="영화 위플래시에서 플레처가 손을 들어 연주를 멈추게 하는 장면, 자막 ‘Not quite my tempo.’"><div class="stamp">통과</div></div>
+  <div class="shot"><img id="heroImg" src="img/pinch.jpg" alt="플레처가 손을 들어 ‘Not quite my tempo’라고 말하는 장면"><div class="stamp">통과</div></div>
   <div class="verdict">
     <div class="grade" id="grade">–<small>%</small></div>
     <div class="line" id="line">녹음을 올려. 들어 보자.</div>
@@ -114,7 +114,7 @@ h2{font-size:24px}
 </ul>
 </div>
 
-<div class="toast" id="toast" aria-live="polite"><img src="fletcher.jpg" alt=""><p id="toastTxt"></p></div>
+<div class="toast" id="toast" aria-live="polite"><img id="toastImg" src="img/pinch.jpg" alt=""><p id="toastTxt"></p></div>
 
 <script>
 // ---- tempo analysis core (shared by page + node test) ----
@@ -307,9 +307,9 @@ const TA = (() => {
 
   const DEMO_PLAN = [
     [24, () => 100],
-    [36, t => 100 - 5 * Math.min(1, (t - 24) / 6)],   // drag to ~95
+    [36, t => 100 - 4 * Math.min(1, (t - 24) / 6)],   // drag to ~96
     [52, () => 100],
-    [60, t => 100 + 6 * Math.min(1, (t - 52) / 3)],   // rush to ~106
+    [60, t => 100 + 8 * Math.min(1, (t - 52) / 3)],   // rush to ~108
     [80, () => 100]
   ];
 
@@ -323,24 +323,39 @@ let res=null,mult=1,dur=0,url=null,isDemo=true,lastX=null,geo=null,lastSeg=null,
 const fmt=t=>{t=Math.max(0,t);const m=Math.floor(t/60),s=Math.floor(t%60);return m+':'+String(s).padStart(2,'0')};
 const status=h=>$('status').innerHTML=h;
 
+const IMG={pinch:['img/pinch.jpg','손을 들어 연주를 멈추는 플레처'],fist:['img/fist.jpg','주먹을 쥐고 씩 웃는 플레처'],rush:['img/rushing.jpg','‘Were you rushing or dragging?’이라고 소리치는 플레처'],mine:['img/mytempo.jpg','‘아니면 내 템포에 맞출 거야?’라고 소리치는 플레처']};
 const LINES=[
-  [97,'…이번엔 넘어간다.',true],
-  [90,'거의 다 왔어. 그런데 ‘거의’는 템포가 아니야.'],
-  [75,'Not quite my tempo. 다시.'],
-  [50,'빨랐어, 느렸어? 대답해.'],
-  [0,'처음부터. 카운트 다시 센다.']
+  [97,'…그만. 됐어. 오늘은 여기까지.','fist',true],
+  [90,'거의 다 왔어. 그런데 ‘거의’는 템포가 아니야.','fist'],
+  [75,'Not quite my tempo. 다시.','pinch'],
+  [50,'빨랐어, 느렸어? 대답해.','rush'],
+  [0,'내 템포에 맞출 거야, 말 거야? 처음부터.','mine']
 ];
-const SEGLINE={f:['빨라졌잖아.','누가 앞질러 가래?','서두르지 마.'],s:['느려졌잖아.','왜 뒤로 처져?','따라와. 지금.']};
+// 차이 크기(봐주는 범위의 몇 배인지)에 따라 한마디와 짤이 달라짐
+const SEGLINE={
+  f:[['살짝 급하네.','숨 쉬어. 박 기다려.','반 박만 참아.'],
+     ['빨라졌잖아.','급한 일 있어?','박을 왜 당겨?'],
+     ['브레이크 어디 갔어?','혼자 퇴근하냐?','이건 템포가 아니라 도주야.']],
+  s:[['살짝 처졌어.','한 박만 일찍 와.','발이 무거워졌네.'],
+     ['느려졌잖아.','왜 뒤로 처져?','밴드가 너 기다리잖아.'],
+     ['자는 거야?','템포 어디 두고 왔어?','이건 템포가 아니라 장례식이야.']]
+};
+const SEGIMG=['pinch','rush','mine'];
+function lv(s){const r=Math.abs(s.peak)/res.thr;return r<1.8?0:r<2.6?1:2}
+function say(s){const k=s.sign>0?'f':'s',l=lv(s);return{txt:SEGLINE[k][l][res.segs.indexOf(s)%3],img:SEGIMG[l],k,l}}
 
 function reference(){
   if($('refMode').value==='fix')return +$('fix').value||100;
   const b=res.beats.map(x=>x.bpm*mult).sort((a,b)=>a-b);return b[b.length>>1];
 }
+function setHero(pct){
+  const [_,txt,im,pass]=LINES.find(l=>pct>=l[0]),hi=$('heroImg');
+  $('grade').innerHTML=pct+'<small>%</small>';$('line').textContent=txt;
+  if(!hi.src.endsWith(IMG[im][0])){hi.src=IMG[im][0];hi.alt=IMG[im][1];hi.classList.remove('pop');void hi.offsetWidth;hi.classList.add('pop')}
+  $('hero').classList.toggle('pass',!!pass);return pass;
+}
 function verdict(pct){
-  const [_,txt,pass]=LINES.find(l=>pct>=l[0]);
-  $('grade').innerHTML=pct+'<small>%</small>';
-  $('line').textContent=txt;
-  const h=$('hero');h.classList.toggle('pass',!!pass);
+  const pass=setHero(pct),h=$('hero');
   h.classList.remove('shake');void h.offsetWidth;if(!pass&&pct<90)h.classList.add('shake');
 }
 function render(shake){
@@ -351,9 +366,9 @@ function render(shake){
   const jit=bs.map(b=>Math.abs(b.res)).sort((a,b)=>a-b)[bs.length>>1];
   const pct=Math.round(inR/bs.length*100);
   $('rRef').textContent=ref.toFixed(1);$('rJit').textContent=jit.toFixed(0)+'ms';$('rSeg').textContent=segs.length+'곳';
-  if(shake)verdict(pct);else{$('grade').innerHTML=pct+'<small>%</small>';$('line').textContent=LINES.find(l=>pct>=l[0])[1];$('hero').classList.toggle('pass',pct>=97)}
   res.segs=segs;res.ref=ref;res.thr=thr;
-  $('list').innerHTML=segs.length?`<table class="stack"><thead><tr><th>구간</th><th>판정</th><th>평균 BPM</th><th>차이</th><th>길이</th><th>한마디</th></tr></thead><tbody>${segs.map((s,i)=>{const k=s.sign>0?'f':'s';return`<tr data-t="${s.t0}"><td class="n">${fmt(s.t0)}–${fmt(s.t1)}</td><td><span class="tag ${k}">${s.sign>0?'빠름':'느림'}</span></td><td class="n">${s.avg.toFixed(1)}</td><td class="n">${s.peak>0?'+':''}${s.peak.toFixed(1)}%</td><td class="n">${s.n}박</td><td class="q">${SEGLINE[k][i%3]}</td></tr>`}).join('')}</tbody></table>`
+  if(shake)verdict(pct);else setHero(pct);
+  $('list').innerHTML=segs.length?`<table class="stack"><thead><tr><th>구간</th><th>판정</th><th>평균 BPM</th><th>차이</th><th>길이</th><th>한마디</th></tr></thead><tbody>${segs.map((s,i)=>{const k=s.sign>0?'f':'s',w=say(s);return`<tr data-t="${s.t0}"><td class="n">${fmt(s.t0)}–${fmt(s.t1)}</td><td><span class="tag ${k}">${s.sign>0?'빠름':'느림'}</span></td><td class="n">${s.avg.toFixed(1)}</td><td class="n">${s.peak>0?'+':''}${s.peak.toFixed(1)}%</td><td class="n">${s.n}박</td><td class="q">${w.txt}</td></tr>`}).join('')}</tbody></table>`
     :'<div class="empty">걸린 구간이 없어요. 봐주는 범위를 좁혀 보세요. 그분은 그렇게 할 거예요.</div>';
   draw();
 }
@@ -378,8 +393,8 @@ function draw(){
   s.innerHTML=g;movePh();
 }
 function toast(sg){
-  const k=sg.sign>0?'f':'s',t=$('toast');
-  $('toastTxt').textContent=SEGLINE[k][res.segs.indexOf(sg)%3];
+  const w=say(sg),k=w.k,t=$('toast');
+  $('toastTxt').textContent=w.txt;$('toastImg').src=IMG[w.img][0];
   t.classList.toggle('s',k==='s');t.classList.add('on');
   clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2400);
 }
@@ -407,7 +422,7 @@ function run(x){
       const t0=performance.now();
       res=TA.analyze(x,SR,{hint:+$('hint').value||110});
       dur=res.dur;mult=1;clearInterval(countT);
-      status((isDemo?'예시: 가상의 드럼 녹음이에요. 0:27쯤 느려지고 0:53쯤 빨라지게 만들었어요. ':'')+`박 ${res.beats.length}개를 ${((performance.now()-t0)/1000).toFixed(1)}초 동안 들었어요.`);
+      status((isDemo?'예시: 가상의 드럼 녹음이에요. 0:27쯤 살짝 느려지고 0:53쯤 확 빨라지게 만들었어요. ':'')+`박 ${res.beats.length}개를 ${((performance.now()-t0)/1000).toFixed(1)}초 동안 들었어요.`);
       render(true);
     }catch(err){clearInterval(countT);status('분석하다 오류가 났어요: '+err.message)}
   },400);

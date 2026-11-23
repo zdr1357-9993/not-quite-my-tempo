@@ -321,24 +321,20 @@ const status=h=>$('status').innerHTML=h;
 
 const IMG={pinch:['img/pinch.jpg?v=3','손을 들어 연주를 멈추는 플레처'],fist:['img/fist.jpg?v=3','주먹을 쥐고 씩 웃는 플레처'],rush:['img/rushing.jpg?v=3','‘Were you rushing or dragging?’이라고 소리치는 플레처'],mine:['img/mytempo.jpg?v=3','‘아니면 내 템포에 맞출 거야?’라고 소리치는 플레처']};
 const LINES=[
-  [97,'…그만. 됐다. 오늘은 여기까지.','fist',true],
-  [90,'거의 다 왔네. 근데 ‘거의’로는 안 돼.','fist'],
-  [75,'내 템포 아니야. 다시.','pinch'],
-  [50,'빨랐냐, 느렸냐? 말해 봐.','rush'],
-  [0,'내 템포에 맞출 거야, 말 거야? 처음부터 다시.','mine']
+  [97,'간만에 좋은 템포네. 집에 가라.','fist',true],
+  [90,'템포 따라가다 팀원들 다 집에 가겠다.','fist'],
+  [75,'메트로놈이랑 싸우냐?','pinch'],
+  [50,'빨랐어, 느렸어? 대답해 이 새끼야.','rush'],
+  [0,'ㅅㅂ 이걸 들으라고 가져왔냐?','mine']
 ];
 // 차이 크기(봐주는 범위의 몇 배인지)에 따라 한마디와 짤이 달라짐
 const SEGLINE={
-  f:[['살짝 급하네.','숨 좀 쉬어.','반 박만 참아.'],
-     ['빨라졌잖아.','뭐가 그렇게 급해?','박 당기지 마.'],
-     ['브레이크 어디 갔어?','혼자 퇴근하냐?','도망가냐?']],
-  s:[['살짝 처졌어.','조금만 더 붙어.','발이 무거워졌네.'],
-     ['느려졌잖아.','왜 자꾸 처져?','다들 너 기다리잖아.'],
-     ['자냐?','템포 어디 두고 왔어?','장례식 치냐?']]
+  f:[['누가 쫓아오냐 뒤에서?'],['빨.라.졌.잖.아.'],['이건 박자도 아니고 뭐냐?']],
+  s:[['어디 산책 나왔냐?'],['느.려.졌.잖.아.'],['템포 맞추다 숨넘어가겠다 이 새끼야.']]
 };
 const SEGIMG=['pinch','rush','mine'];
 function lv(s){const r=Math.abs(s.peak)/res.thr;return r<1.8?0:r<2.6?1:2}
-function say(s){const k=s.sign>0?'f':'s',l=lv(s);return{txt:SEGLINE[k][l][res.segs.indexOf(s)%3],img:SEGIMG[l],k,l}}
+function say(s){const k=s.sign>0?'f':'s',l=lv(s);return{txt:SEGLINE[k][l][res.segs.indexOf(s)%SEGLINE[k][l].length],img:SEGIMG[l],k,l}}
 
 function reference(){
   if($('refMode').value==='fix')return +$('fix').value||100;
@@ -365,7 +361,7 @@ function render(shake){
   res.segs=segs;res.ref=ref;res.thr=thr;
   if(shake)verdict(pct);else setHero(pct);
   $('list').innerHTML=segs.length?`<table class="stack"><thead><tr><th>구간</th><th>판정</th><th>평균 BPM</th><th>차이</th><th>길이</th><th>한마디</th></tr></thead><tbody>${segs.map((s,i)=>{const k=s.sign>0?'f':'s',w=say(s);return`<tr data-t="${s.t0}" data-i="${i}"><td class="n">${fmt(s.t0)}–${fmt(s.t1)}</td><td><span class="tag ${k}">${s.sign>0?'빠름':'느림'}</span></td><td class="n">${s.avg.toFixed(1)}</td><td class="n">${s.peak>0?'+':''}${s.peak.toFixed(1)}%</td><td class="n">${s.n}박</td><td class="q"><img class="mini" src="${IMG[w.img][0]}" alt="">${w.txt}</td></tr>`}).join('')}</tbody></table>`
-    :'<div class="empty">걸린 데가 없네요. 봐주는 범위를 좁혀 보세요. 플레처라면 벌써 좁혔어요.</div>';
+    :'<div class="empty">걸린 데가 없네요. 봐주는 범위를 좁혀 보세요. 플레처라면 정확히 맞췄을 거예요.</div>';
   draw();
 }
 function draw(){

@@ -92,7 +92,7 @@ h2{font-size:24px}
   <label>대략 BPM<input type="number" id="hint" value="110" min="40" max="240" inputmode="numeric"></label>
   <label>기준 템포<select id="refMode"><option value="med">내 평균</option><option value="fix">직접 입력</option></select></label>
   <label id="fixWrap" hidden>기준 BPM<input type="number" id="fix" value="100" min="40" max="240" step="0.5" inputmode="decimal"></label>
-  <label><span>봐주는 범위 ±<output id="thrOut">2.5</output>%</span><input type="range" id="thr" min="1" max="6" step="0.5" value="2.5"></label>
+  <label><span>봐주는 범위 ±<output id="thrOut">2.5</output>%</span><input type="range" id="thr" min="1" max="10" step="0.5" value="2.5"></label>
   <label>박 보정<span class="seg2"><button id="half" type="button">÷2</button><button id="dbl" type="button">×2</button></span></label>
 </div>
 
@@ -305,13 +305,9 @@ const TA = (() => {
     return b;
   }
 
-  const DEMO_PLAN = [
-    [22, () => 100],
-    [38, t => 100 - 4 * Math.min(1, (t - 22) / 4)],   // 살짝 느려짐 (~96)
-    [50, () => 100],
-    [64, t => 100 + 8 * Math.min(1, (t - 50) / 3)],   // 크게 빨라짐 (~108)
-    [80, () => 100]
-  ];
+  const g = (t, m, s, a) => a * Math.exp(-0.5 * ((t - m) / s) ** 2);
+  // 0:15 살짝 느림, 0:33 꽤 느림, 0:57 크게 빠름 — 봐주는 범위 1~10%에서 점수가 약 50~100%로 고르게 변함
+  const DEMO_PLAN = [[80, t => 100 + g(t, 15, 3, -2) + g(t, 33, 3.5, -5) + g(t, 57, 4.5, 9.5)]];
 
   return { analyze, segments, synth, wav, DEMO_PLAN };
 })();
@@ -422,7 +418,7 @@ function run(x){
       const t0=performance.now();
       res=TA.analyze(x,SR,{hint:+$('hint').value||110});
       dur=res.dur;mult=1;clearInterval(countT);
-      status((isDemo?'지금 보이는 건 예시로 만든 가짜 드럼 녹음이에요. 0:25쯤 살짝 느려지고 0:52쯤 확 빨라져요. ':'')+`박 ${res.beats.length}개 찾음 · ${((performance.now()-t0)/1000).toFixed(1)}초 걸림`);
+      status((isDemo?'지금 보이는 건 예시로 만든 가짜 드럼 녹음이에요. 봐주는 범위를 움직이면 점수랑 짤이 바뀌어요. ':'')+`박 ${res.beats.length}개 찾음 · ${((performance.now()-t0)/1000).toFixed(1)}초 걸림`);
       render(true);
     }catch(err){clearInterval(countT);status('분석하다가 오류가 났어요: '+err.message)}
   },400);

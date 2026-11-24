@@ -618,7 +618,7 @@ function run(x,saved){
 async function decode(file){
   const buf=await file.arrayBuffer();
   const AC=window.AudioContext||window.webkitAudioContext,ctx=new AC();
-  const ab=await new Promise((ok,no)=>ctx.decodeAudioData(buf,ok,no));
+  const ab=await new Promise((ok,no)=>{const q=ctx.decodeAudioData(buf,ok,no);if(q&&q.catch)q.catch(()=>{})});
   ctx.close&&ctx.close();
   const OC=window.OfflineAudioContext||window.webkitOfflineAudioContext;
   const off=new OC(1,Math.ceil(ab.duration*SR),SR),src=off.createBufferSource();

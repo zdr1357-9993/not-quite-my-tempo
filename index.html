@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Not quite my tempo</title>
+<link rel="manifest" href="manifest.json"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Not quite"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="theme-color" content="#0d0b0a"><link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -67,7 +68,7 @@ tbody tr{cursor:pointer}tbody tr:hover{background:var(--band)}td.q{color:var(--i
 .ctrl .file.small,.prow .file.small{display:inline-flex;align-items:center;cursor:pointer;background:var(--card);border-color:var(--line);color:var(--ink);font:500 15px 'Noto Sans KR',sans-serif}
 .cut{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;border-top:1px solid var(--line);padding:8px 0}.cut:first-of-type{border-top:0}
 .cut .n{font:400 17px Anton,sans-serif;letter-spacing:.03em;min-width:3.2em}.cut.on .n{color:var(--fast)}.cut.off{opacity:.6}.cut.land{cursor:pointer}.cut.land b{font:400 17px Anton,sans-serif}
-.sm{min-height:40px;font-size:14px;padding:0 12px}#songName{flex:1 1 160px;min-height:40px}.rec2{border-color:var(--fast);font-weight:700;font-variant-numeric:tabular-nums}.rec2.on{background:#7d0f14;color:#fff;animation:pulse 1s infinite}.sm.yes{border-color:var(--fast);color:var(--ink)}
+.sm{min-height:40px;font-size:14px;padding:0 12px}#songName{flex:1 1 160px;min-height:40px}#songAud{width:100%;margin:6px 0}.srow{display:flex;gap:6px;align-items:center;border-top:1px solid var(--line);padding:6px 0}.srow:first-child{border-top:0}.srow .pick{flex:1;text-align:left;background:none;border:0;padding:4px;display:flex;flex-direction:column;align-items:flex-start;line-height:1.3}.srow .pick small{color:var(--mute);font-size:12.5px}.srow.cur .pick{color:var(--fast)}.srow.cur .pick::before{content:'● ';font-size:11px}.srow input.rn{flex:1;min-height:40px}.bk{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.bk .file{display:inline-flex;align-items:center;cursor:pointer}.rec2{border-color:var(--fast);font-weight:700;font-variant-numeric:tabular-nums}.rec2.on{background:#7d0f14;color:#fff;animation:pulse 1s infinite}.sm.yes{border-color:var(--fast);color:var(--ink)}
 .tg{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--mute)}.tg input{width:84px;min-height:40px}
 .guide{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 14px;margin:0 0 16px}
 .guide summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700}
@@ -127,9 +128,11 @@ h2{font-size:24px}
 
 <section class="panel" id="songBox" hidden>
   <h3>원곡</h3>
-  <div class="prow"><select id="song" aria-label="원곡 고르기"></select><label class="file small"><span>원곡 올리기</span><input type="file" id="songFile"></label></div>
+  <div id="songList"></div>
+  <div class="prow"><label class="file small"><span>원곡 파일 올리기</span><input type="file" id="songFile"></label></div>
+  <audio id="songAud" controls hidden></audio>
   <div class="prow"><input type="text" id="songName" placeholder="곡 이름 (안 적으면 날짜로)" aria-label="곡 이름" autocomplete="off"><button type="button" class="sm rec2" id="songRec" hidden>● 원곡 녹음하기</button></div>
-  <p class="pnote" id="songRecNote" hidden>유튜브 뮤직 같은 데서 원곡을 <b>다른 기기</b>(아이패드, 맥, 스피커)로 틀고, 이 폰을 스피커 가까이 둔 채 ‘원곡 녹음하기’를 누르세요. 다 들었으면 다시 누르면 템포만 뽑아서 원곡으로 저장해요. 녹음한 소리는 저장하지 않아요. 같은 폰으로 틀면 녹음을 시작할 때 음악이 멈출 수 있어요.</p>
+  <p class="pnote" id="songRecNote" hidden>유튜브 뮤직 같은 데서 원곡을 <b>다른 기기</b>(아이패드, 맥, 스피커)로 틀고, 이 폰을 스피커 가까이 둔 채 ‘원곡 녹음하기’를 누르세요. 다 들었으면 다시 누르면 원곡 목록에 저장돼요. 녹음한 소리도 같이 저장돼서 ▶로 다시 들을 수 있어요. 같은 폰으로 틀면 녹음을 시작할 때 음악이 멈출 수 있어요.</p>
   <div class="prow" id="nudgeRow" hidden><span class="mute">원곡 위치</span><span class="seg2"><button id="nb" type="button">◀ 1박</button><button id="nf" type="button">1박 ▶</button></span><span id="alignInfo" class="mute"></span></div>
   <p class="pnote">원곡 템포 곡선을 내 연주에 맞춰 겹쳐요. 그래프의 흰 점선이 원곡 템포예요. 변속 자리가 내 연주랑 어긋나 보이면 ◀ ▶로 맞춰 주세요. 원곡 파일(mp3·m4a)이 있어야 하고, 멜론·스포티파이 같은 스트리밍 음원은 파일로 꺼낼 수 없어요.</p>
 </section>
@@ -164,6 +167,13 @@ h2{font-size:24px}
   <li>BPM이 반이나 두 배로 나오면 ÷2, ×2를 누르세요. ‘대략 BPM’을 미리 넣어 두면 잘 안 틀려요.</li>
   <li>필인, 브레이크, 하프타임에서는 박을 잘못 잡아서 그래프가 튈 수 있어요. 플레처도 가끔은 억울한 소리를 해요.</li>
 </ul>
+
+<h2 style="margin-top:30px">저장과 백업</h2>
+<div class="panel">
+  <p class="pnote" style="margin-top:0">원곡과 내 녹음은 이 폰의 브라우저 안에 저장돼요. 사파리에서 그냥 열어 쓰면, 7일 동안 안 들어올 경우 사파리가 지워 버릴 수 있어요. <b>공유 → 홈 화면에 추가</b>해서 그 아이콘으로 열면 이 규칙에서 빠져요. 그래도 폰을 바꾸거나 할 때를 위해 가끔 백업 파일을 만들어 두세요.</p>
+  <p id="storeInfo" class="pnote"></p>
+  <div class="bk"><button type="button" id="bkOut">백업 파일 만들기</button><label class="file small"><span>백업 불러오기</span><input type="file" id="bkIn"></label></div>
+</div>
 </div>
 
 <div class="toast" id="toast" aria-live="polite"><img id="toastImg" src="img/pinch.jpg?v=3" alt=""><p id="toastTxt"></p></div>
@@ -652,11 +662,11 @@ const DB=(()=>{let pr=null;const open=()=>pr||(pr=new Promise((ok,no)=>{try{cons
   const tx=async(st,mode,fn)=>{const d=await open();return new Promise((ok,no)=>{const t=d.transaction(st,mode);const r=fn(t.objectStore(st));t.oncomplete=()=>ok(r&&r.result);t.onerror=()=>no(t.error)})};
   return{put:(st,v)=>tx(st,'readwrite',s=>s.put(v)),all:st=>tx(st,'readonly',s=>s.getAll()),get:(st,id)=>tx(st,'readonly',s=>s.get(id)),del:(st,id)=>tx(st,'readwrite',s=>s.delete(id))}})();
 async function addTake(blob,d){try{const id=Date.now();await DB.put('takes',{id,type:blob.type||'audio/mp4',buf:await blob.arrayBuffer(),dur:d,score:null,name:blob.name||''});try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}refreshTakes();return id}catch(e){return null}}
-async function saveScore(id,sc){try{const t=await DB.get('takes',id);if(t){t.score=sc;await DB.put('takes',t);refreshTakes()}}catch(e){}}
+async function saveScore(id,sc){try{const t=await DB.get('takes',id);if(t){t.score=sc;const ln=$('refMode').value==='song'&&song&&t.songId!==song.id;if(ln)t.songId=song.id;await DB.put('takes',t);refreshTakes();if(ln)refreshSongs()}}catch(e){}}
 const dt=ms=>{const d=new Date(ms);return`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
 async function refreshTakes(){
-  try{const all=(await DB.all('takes')).sort((a,b)=>b.id-a.id);$('takesBox').hidden=!all.length;$('takeN').textContent=all.length+'개';
-    $('takes').innerHTML=all.map(t=>`<div class="take" data-id="${t.id}"><button type="button" class="open${t.id===curId?' cur':''}"><span>${dt(t.id)}</span><span style="color:var(--mute)">${fmt(t.dur)}</span><span class="sc">${t.score==null?'–':t.score+'%'}</span></button><button type="button" class="del">삭제</button></div>`).join('')}catch(e){$('takesBox').hidden=true}
+  try{const all=(await DB.all('takes')).sort((a,b)=>b.id-a.id),sn={};(await DB.all('songs')).forEach(s=>sn[s.id]=s.name);$('takesBox').hidden=!all.length;$('takeN').textContent=all.length+'개';
+    $('takes').innerHTML=all.map(t=>`<div class="take" data-id="${t.id}"><button type="button" class="open${t.id===curId?' cur':''}"><span>${dt(t.id)}</span><span style="color:var(--mute)">${t.songId&&sn[t.songId]?esc(sn[t.songId].slice(0,12)):fmt(t.dur)}</span><span class="sc">${t.score==null?'–':t.score+'%'}</span></button><button type="button" class="del">삭제</button></div>`).join('')}catch(e){$('takesBox').hidden=true}
 }
 $('takes').addEventListener('click',async e=>{
   const row=e.target.closest('.take');if(!row)return;const id=+row.dataset.id;
@@ -664,32 +674,69 @@ $('takes').addEventListener('click',async e=>{
   if(del){if(!del.classList.contains('sure')){del.classList.add('sure');del.textContent='정말?';setTimeout(()=>{del.classList.remove('sure');del.textContent='삭제'},2500);return}
     try{await DB.del('takes',id)}catch(err){}if(curId===id)curId=null;refreshTakes();return}
   try{status('녹음을 여는 중…');const t=await DB.get('takes',id);const blob=new Blob([t.buf],{type:t.type});const x=await decode(blob);
-    isDemo=false;curId=id;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(blob);$('aud').src=url;run(x,t);refreshTakes();window.scrollTo({top:0,behavior:'smooth'})}
+    isDemo=false;curId=id;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(blob);$('aud').src=url;
+    if(t.songId){const s=await DB.get('songs',t.songId);if(s){song=s;nudge=0;$('refMode').value='song';$('fixWrap').hidden=true;$('songBox').hidden=false;refreshSongs()}}
+    run(x,t);refreshTakes();window.scrollTo({top:0,behavior:'smooth'})}
   catch(err){status('이 녹음은 못 열겠어요.')}
 });
 let lastSongId=null;try{lastSongId=+localStorage.getItem('nqmt-song')||null}catch(e){}
 async function refreshSongs(){
-  try{const all=(await DB.all('songs')).sort((a,b)=>b.id-a.id);
-    $('song').innerHTML=all.length?all.map(s=>`<option value="${s.id}">${esc(s.name)} · ${Math.round(s.med)} BPM</option>`).join(''):'<option value="">원곡을 올려 주세요</option>';
-    $('song').disabled=!all.length;
+  try{const all=(await DB.all('songs')).sort((a,b)=>b.id-a.id),cnt={};(await DB.all('takes')).forEach(t=>{if(t.songId)cnt[t.songId]=(cnt[t.songId]||0)+1});
     const pick=all.find(s=>s.id===(song&&song.id))||all.find(s=>s.id===lastSongId)||all[0]||null;
-    if(pick){$('song').value=pick.id}song=pick;if(res)render(false);
+    song=pick;
+    $('songList').innerHTML=all.length?all.map(s=>`<div class="srow${pick&&s.id===pick.id?' cur':''}" data-id="${s.id}"><button type="button" class="pick">${esc(s.name)}<small>${Math.round(s.med)} BPM · ${fmt(s.dur)}${cnt[s.id]?' · 내 녹음 '+cnt[s.id]+'개':''}${s.audio?'':' · 템포만'}</small></button>${s.audio?'<button type="button" class="sm play" aria-label="원곡 듣기">▶</button>':''}<button type="button" class="sm ren">이름</button><button type="button" class="sm del">삭제</button></div>`).join('')
+      :'<p class="pnote">아직 원곡이 없어요. 아래에서 녹음하거나 파일을 올려 주세요.</p>';
+    if(res)render(false);
   }catch(e){}
 }
-$('song').addEventListener('change',async()=>{try{song=await DB.get('songs',+$('song').value);nudge=0;try{localStorage.setItem('nqmt-song',song.id)}catch(e){}render(true)}catch(e){}});
+let songUrl=null;
+$('songList').addEventListener('click',async e=>{
+  const row=e.target.closest('.srow');if(!row)return;const id=+row.dataset.id,b=e.target.closest('button');if(!b)return;
+  if(b.classList.contains('pick')){song=await DB.get('songs',id);nudge=0;try{localStorage.setItem('nqmt-song',id)}catch(err){}refreshSongs();render(true);return}
+  if(b.classList.contains('play')){const s=await DB.get('songs',id);if(songUrl)URL.revokeObjectURL(songUrl);songUrl=URL.createObjectURL(new Blob([s.audio],{type:s.type||'audio/mp4'}));const a=$('songAud');a.src=songUrl;a.hidden=false;const q=a.play();if(q)q.catch(()=>{});return}
+  if(b.classList.contains('ren')){const s=await DB.get('songs',id),pk=row.querySelector('.pick');const inp=document.createElement('input');inp.className='rn';inp.value=s.name;pk.replaceWith(inp);inp.focus();
+    const done=async()=>{const v=inp.value.trim();if(v&&v!==s.name){s.name=v.slice(0,60);await DB.put('songs',s)}refreshSongs();refreshTakes()};
+    inp.addEventListener('blur',done,{once:true});inp.addEventListener('keydown',ev=>{if(ev.key==='Enter')inp.blur()});return}
+  if(b.classList.contains('del')){if(!b.classList.contains('sure')){b.classList.add('sure');b.textContent='정말?';setTimeout(()=>{b.classList.remove('sure');b.textContent='삭제'},2500);return}
+    try{await DB.del('songs',id)}catch(err){}if(song&&song.id===id)song=null;refreshSongs();refreshTakes();render(true)}
+});
 async function addSong(blob,fallbackName){
   status('원곡 템포를 재는 중… 곡이 길면 조금 걸려요.');
   try{const x=await decode(blob);await new Promise(r=>setTimeout(r,30));
     const r=TA.analyze(x,SR,{hint:+$('hint').value||110});
     if(r.beats.length<16)throw 0;
     const id=Date.now(),name=($('songName').value.trim()||fallbackName||('원곡 '+dt(id))).slice(0,60);
-    await DB.put('songs',{id,name,beats:r.beats.map(b=>({t:+b.t.toFixed(3),bpm:+b.bpm.toFixed(2)})),med:TA.med(r.beats.map(b=>b.bpm)),dur:r.dur});
-    song=await DB.get('songs',id);nudge=0;$('songName').value='';try{localStorage.setItem('nqmt-song',id)}catch(e){}
+    await DB.put('songs',{id,name,beats:r.beats.map(b=>({t:+b.t.toFixed(3),bpm:+b.bpm.toFixed(2)})),med:TA.med(r.beats.map(b=>b.bpm)),dur:r.dur,audio:await blob.arrayBuffer(),type:blob.type||'audio/mp4'});try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+    song=await DB.get('songs',id);nudge=0;$('songName').value='';refreshTakes();try{localStorage.setItem('nqmt-song',id)}catch(e){}
     await refreshSongs();status(`원곡 ‘${esc(name)}’ 저장했어요. 박 ${r.beats.length}개, 평균 ${Math.round(TA.med(r.beats.map(b=>b.bpm)))} BPM.`);
   }catch(err){status('원곡에서 박을 못 찾았어요. 소리가 너무 작거나 짧으면 그래요. 파일이면 m4a, mp3, wav인지 봐 주세요.')}
 }
 $('songFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;e.target.value='';addSong(f,f.name.replace(/\.[^.]+$/,''))});
 refreshTakes();
+
+// ---- 백업 ----
+const b64=buf=>{const u=new Uint8Array(buf);let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s)};
+const unb64=s=>{const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u.buffer};
+async function storeInfo(){try{let t='';if(navigator.storage&&navigator.storage.estimate){const e=await navigator.storage.estimate();t+=`지금 ${(e.usage/1048576).toFixed(1)}MB 쓰는 중.`}
+  if(navigator.storage&&navigator.storage.persisted)t+=(await navigator.storage.persisted())?' 오래 보관 허락 받음.':'';
+  if(window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone)t+=' 홈 화면 앱으로 열려 있어요.';$('storeInfo').textContent=t}catch(e){}}
+$('bkOut').addEventListener('click',async()=>{
+  try{status('백업 파일 만드는 중…');const songs=await DB.all('songs'),takes=await DB.all('takes');
+    const enc=o=>{const c={...o};if(c.audio)c.audio=b64(c.audio);if(c.buf)c.buf=b64(c.buf);return c};
+    const blob=new Blob([JSON.stringify({app:'not-quite-my-tempo',v:1,at:Date.now(),songs:songs.map(enc),takes:takes.map(enc)})],{type:'application/json'});
+    const d=new Date(),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`템포백업-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),60000);
+    status(`백업 파일을 만들었어요. 원곡 ${songs.length}곡, 내 녹음 ${takes.length}개. 아이폰은 ‘파일 → 다운로드’에 저장돼요.`)}catch(e){status('백업 파일을 못 만들었어요.')}
+});
+$('bkIn').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;e.target.value='';
+  try{status('백업을 불러오는 중…');const j=JSON.parse(await f.text());if(j.app!=='not-quite-my-tempo')throw 0;
+    for(const s of j.songs||[]){if(s.audio)s.audio=unb64(s.audio);await DB.put('songs',s)}
+    for(const t of j.takes||[]){if(t.buf)t.buf=unb64(t.buf);await DB.put('takes',t)}
+    await refreshSongs();await refreshTakes();storeInfo();status(`백업을 불러왔어요. 원곡 ${(j.songs||[]).length}곡, 내 녹음 ${(j.takes||[]).length}개.`)}
+  catch(err){status('이 파일은 이 앱의 백업 파일이 아니에요.')}
+});
+storeInfo();refreshSongs();
 
 let recState=null;
 async function toggleRec(btn,label,stopLabel,msg,onBlob){

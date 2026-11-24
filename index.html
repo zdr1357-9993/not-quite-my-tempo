@@ -73,6 +73,8 @@ tbody tr{cursor:pointer}tbody tr:hover{background:var(--band)}td.q{color:var(--i
 .guide{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 14px;margin:0 0 16px}
 .guide summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700}
 .guide ol{margin:4px 0 8px;padding-left:22px}.guide li{margin:6px 0}.guide p{color:var(--mute);font-size:14px;margin:0 0 12px}
+.gnums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}.gnums div{background:var(--band);border-radius:10px;padding:8px 10px}.gnums b{display:block;font:400 22px Anton,sans-serif;letter-spacing:.02em}.gnums span{font-size:12.5px;color:var(--mute)}
+.fig2{position:relative;height:170px;background:var(--bg);border:1px solid var(--line);border-radius:10px;cursor:crosshair;margin-bottom:8px}.fig2>svg{position:absolute;inset:0;width:100%;height:100%}
 @media(max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){
 .band{padding:18px 14px 110px}
@@ -99,7 +101,7 @@ h2{font-size:24px}
   <div class="verdict">
     <div class="grade" id="grade">–<small>%</small></div>
     <div class="line" id="line">녹음 올려 봐. 들어 보자.</div>
-    <div class="meta"><span><b id="rRef">–</b>기준 BPM</span><span><b id="rJit">–</b>박 흔들림</span><span><b id="rSeg">–</b>걸린 구간</span></div>
+    <div class="meta"><span><b id="rRef">–</b>기준 BPM</span><span><b id="rJit">–</b>16비트 흔들림</span><span><b id="rSeg">–</b>걸린 구간</span></div>
   </div>
 </section>
 
@@ -149,6 +151,15 @@ h2{font-size:24px}
 <div class="legend"><span><i style="background:var(--fast)"></i>빠름</span><span><i style="background:var(--slow)"></i>느림</span><span><i style="background:var(--band);outline:1px solid var(--line)"></i>봐주는 범위</span><span><i style="background:none;border-top:2px dashed var(--mute);height:0;border-radius:0"></i>기준</span></div>
 <div class="status" id="status"></div>
 
+<section class="panel" id="gridBox" hidden>
+  <h3>16비트 고르기</h3>
+  <p class="pnote" style="margin-top:0">타격 하나하나가 고르게 떨어지는지 봐요. 2초마다 '고르게 쳤으면 있어야 할 자리'에서 얼마나 흩어졌는지(ms)를 재고, 평소보다 확 흩어진 구간을 짚어요. 일정하게 뒤로 눕거나 당기는 건 필로 보고 빼요.</p>
+  <div class="gnums"><div><b id="gMed">–</b><span>흔들림 (중앙값)</span></div><div><b id="gHits">–</b><span>잡힌 타격</span></div><div><b id="gSegs">–</b><span>흩어진 구간</span></div></div>
+  <div class="fig2" id="fig2"><svg id="svg2" role="img" aria-label="시간에 따른 16비트 흔들림 그래프"></svg></div>
+  <div id="gList"></div>
+  <p class="pnote" id="gSlot"></p>
+  <p class="pnote">숫자는 같은 곡, 같은 녹음 안에서 비교할 때 제일 정확해요. 고스트노트나 일부러 비튼 음이 많은 그루브는 16비트 연습보다 숫자가 크게 나와요.</p>
+</section>
 <section class="panel" id="cutBox" hidden>
   <h3>변속 후보</h3>
   <p class="pnote">템포가 한동안 다른 값에 머문 곳이에요. 일부러 바꾼 건지 흔들린 건지는 치는 사람만 알아요.</p>
@@ -170,6 +181,7 @@ h2{font-size:24px}
   <li>‘녹음 시작’을 누르고 치다가 다시 누르면 바로 판정이 나와요. 녹음은 ‘내 녹음’에 쌓이니까 음성 메모 앱을 따로 안 써도 돼요.</li>
   <li>폰은 드럼에서 1~2m쯤 떨어뜨려 두세요. 너무 가까우면 소리가 찢어져서 박을 잘 못 잡아요.</li>
   <li>기준 템포는 세 가지예요. <b>원곡이랑 비교</b>는 원곡 템포 곡선을 따라가서 변속이 있어도 정확해요. <b>내 평균</b>은 원곡이 없을 때 쓰고, 템포가 한동안 바뀐 곳을 찾아서 변속인지 물어봐요. <b>직접 입력</b>은 클릭 템포가 정해진 연습용이에요.</li>
+  <li>‘16비트 고르기’는 원곡 없이 내 연주만으로 재요. 템포 그래프가 ‘곡 흐름이 밀렸나’라면, 이건 ‘타격이 고르게 떨어졌나’예요.</li>
   <li>밴드가 같이 연주한 원곡처럼 템포가 출렁이는 곡은 봐주는 범위를 ±4 정도로 잡는 게 현실적이에요.</li>
   <li>봐주는 범위는 BPM 단위예요. 기준이 100이고 ±2.5면 97.5~102.5 안에 든 박만 통과예요.</li>
   <li>BPM이 반이나 두 배로 나오면 ÷2, ×2를 누르세요. ‘대략 BPM’을 미리 넣어 두면 잘 안 틀려요.</li>
@@ -180,7 +192,7 @@ h2{font-size:24px}
 <div class="panel">
   <p class="pnote" style="margin-top:0">원곡과 내 녹음은 이 폰의 브라우저 안에 저장돼요. 사파리에서 그냥 열어 쓰면, 7일 동안 안 들어올 경우 사파리가 지워 버릴 수 있어요. <b>공유 → 홈 화면에 추가</b>해서 그 아이콘으로 열면 이 규칙에서 빠져요. 그래도 폰을 바꾸거나 할 때를 위해 가끔 백업 파일을 만들어 두세요.</p>
   <p id="storeInfo" class="pnote"></p>
-  <p class="pnote">앱 버전 11/24 18:28</p>
+  <p class="pnote">앱 버전 11/24 20:52</p>
   <div class="bk"><button type="button" id="bkOut">백업 파일 만들기</button><label class="file small"><span>백업 불러오기</span><input type="file" id="bkIn"></label></div>
 </div>
 </div>
@@ -220,7 +232,9 @@ const TA = (() => {
     for (let i = 0; i < N; i++) win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / N);
     const nb = Math.min(N / 2, Math.round(10000 / (sr / N)));
     const nf = Math.max(0, Math.floor((x.length - N) / H) + 1);
-    const env = new Float32Array(nf);
+    const env = new Float32Array(nf), envH = new Float32Array(nf);
+    const h0 = Math.round(3000 / (sr / N)), h1 = Math.min(N / 2, Math.round(11000 / (sr / N)));
+    let prevH = new Float32Array(N / 2), curH = new Float32Array(N / 2);
     const re = new Float64Array(N), im = new Float64Array(N);
     let prev = new Float32Array(nb), cur = new Float32Array(nb);
     for (let f = 0; f < nf; f++) {
@@ -235,7 +249,10 @@ const TA = (() => {
         if (d > 0) s += k < nb / 8 ? d * 2 : d; // lows (kick/snare body) count double
       }
       env[f] = f ? s : 0;
-      const t = prev; prev = cur; cur = t;
+      let sh = 0;
+      for (let k = h0; k < h1; k++) { const m = Math.log1p(1000 * Math.hypot(re[k], im[k])); curH[k] = m; const d = m - prevH[k]; if (d > 0) sh += d; }
+      envH[f] = f ? sh : 0;
+      const t = prev; prev = cur; cur = t; const t2 = prevH; prevH = curH; curH = t2;
     }
     // remove slow trend, rectify, normalise
     const fps = sr / H, w = Math.round(0.4 * fps), out = new Float32Array(nf);
@@ -250,8 +267,72 @@ const TA = (() => {
     for (let i = 0; i < nf; i++) v += (out[i] - m) ** 2;
     const sd = Math.sqrt(v / (nf || 1)) || 1;
     for (let i = 0; i < nf; i++) out[i] /= sd;
-    return { env: out, fps };
+    return { env: out, fps, envH: detrend(envH, fps) };
   }
+  function detrend(e, fps) {
+    const nf = e.length, w = Math.round(0.15 * fps), out = new Float32Array(nf);
+    let acc = 0;
+    for (let i = 0; i < nf; i++) {
+      acc += e[i]; if (i > 2 * w) acc -= e[i - 2 * w - 1];
+      const c = i - w; if (c >= 0) out[c] = Math.max(0, e[c] - acc / Math.min(i + 1, 2 * w + 1));
+    }
+    let m = 0, v = 0; for (let i = 0; i < nf; i++) m += out[i]; m /= nf || 1;
+    for (let i = 0; i < nf; i++) v += (out[i] - m) ** 2; const sd = Math.sqrt(v / (nf || 1)) || 1;
+    for (let i = 0; i < nf; i++) out[i] /= sd;
+    return out;
+  }
+  // 타격 하나하나: 주변 최댓값 + 이웃 평균보다 delta 이상 + 최소 60ms 간격, 프레임 사이 보정
+  function pickHits(e, fps, off, delta = 0.2) {
+    const pre = 2, avg = 6, wait = Math.round(0.06 * fps), out = []; let last = -1e9;
+    for (let i = avg; i < e.length - avg; i++) {
+      let top = true; for (let j = i - pre; j <= i + pre; j++) if (e[j] > e[i]) { top = false; break; }
+      if (!top) continue;
+      let m = 0; for (let j = i - avg; j <= i + avg; j++) m += e[j]; m /= 2 * avg + 1;
+      if (e[i] < m + delta || i - last < wait) continue;
+      const a = e[i - 1], b = e[i], cc = e[i + 1], d = a - 2 * b + cc;
+      out.push((i + (d < 0 ? 0.5 * (a - cc) / d : 0)) / fps + off); last = i;
+    }
+    return out;
+  }
+  // 16비트 고르기: 2초 창마다 주변 박들로 16분 격자를 세우고, 타격이 가장 가까운 칸에서 몇 ms 벗어났는지 봄
+  // - 격자에서 크게 벗어난 음(고스트·플램 등, 칸의 30% 이상)은 빼고
+  // - 창 안의 평균 어긋남(일정하게 뒤로 눕는 필)은 빼고, '흩어진 정도'만 셈 (튀는 값에 덜 흔들리게 중앙값 기준)
+  function hitGrid(h, beats, mult = 1) {
+    if (h.length < 16 || beats.length < 8) return null;
+    const bt = beats.map(b => b.t), wins = [], dev = new Array(h.length).fill(null), slotOf = new Array(h.length).fill(-1);
+    for (let s = Math.max(h[0], bt[0]); s < Math.min(h[h.length - 1], bt[bt.length - 1]) - 1; s += 1) {
+      const bj = []; for (let j = 0; j < bt.length; j++) if (bt[j] >= s - 0.6 && bt[j] <= s + 2.6) bj.push(j);
+      if (bj.length < 4) continue;
+      let sx = 0, sy = 0, sxx = 0, sxy = 0; const n = bj.length;
+      for (const j of bj) { sx += j; sy += bt[j]; sxx += j * j; sxy += j * bt[j]; }
+      const a = (n * sxy - sx * sy) / (n * sxx - sx * sx), b = (sy - a * sx) / n;
+      const ds = [], ix = [];
+      for (let i = 0; i < h.length; i++) {
+        if (h[i] < s || h[i] >= s + 2) continue;
+        const ph = (h[i] - b) / a * 4, r = Math.round(ph);
+        if (Math.abs(ph - r) < 0.3) { ds.push((ph - r) * a / 4 * 1000); ix.push([i, ((r % 4) + 4) % 4]); }
+      }
+      if (ds.length < 6) continue;
+      const m = med(ds), mad = med(ds.map(d => Math.abs(d - m))) * 1.4826;
+      ix.forEach(([i, sl], q) => { if (dev[i] === null) { dev[i] = ds[q] - m; slotOf[i] = sl; } });
+      wins.push({ t: s + 1, spread: mad, n: ds.length, bpm: 60 / a * mult });
+    }
+    if (!wins.length) return null;
+    const md = med(wins.map(w => w.spread)), thr = Math.max(10, md * 1.6);
+    const segs = []; let cur = null;
+    wins.forEach((w, i) => {
+      if (w.spread > thr) { if (cur && w.t - cur.t1 <= 1.01) { cur.t1 = w.t; cur.peak = Math.max(cur.peak, w.spread); } else { if (cur) segs.push(cur); cur = { t0: w.t, t1: w.t, peak: w.spread }; } }
+    });
+    if (cur) segs.push(cur);
+    // 1·e·&·a 자리별 평균 어긋남
+    const pos = [[], [], [], []];
+    h.forEach((t, i) => { if (dev[i] !== null && slotOf[i] >= 0) pos[slotOf[i]].push(dev[i]); });
+    const all = pos.flat(), mAll = all.length ? all.reduce((a, b) => a + b, 0) / all.length : 0;
+    const slot = pos.map(p => p.length >= 5 ? p.reduce((a, b) => a + b, 0) / p.length - mAll : null);
+    const first = h[0] + 2.5, last = h[h.length - 1] - 2.5; // 치기 시작·멈춘 순간은 빼고
+    return { wins, dev, med: md, thr, segs: segs.map(s => ({ ...s, t0: s.t0 - 1, t1: s.t1 + 1 })).filter(s => s.t1 > first && s.t0 < last), slot, n: h.length };
+  }
+
 
   function estimatePeriod(env, fps, hint, strict) {
     // 원곡을 알 때(strict): 같은 곡이니 원곡 템포 ±12% 안에서만 찾음
@@ -314,7 +395,7 @@ const TA = (() => {
 
   function analyze(x, sr, opt = {}) {
     const hint = opt.hint || 110;
-    const { env, fps } = onsetEnvelope(x, sr);
+    const { env, fps, envH } = onsetEnvelope(x, sr);
     // 원곡을 알면 그 템포를 출발점으로 그대로 씀 (짧은 연주는 자기상관이 엇박 패턴에 속기 쉬움)
     const P = opt.strict ? 60 * fps / hint : estimatePeriod(env, fps, hint, false);
     // 1차: 느슨하게 묶어 전체 흐름을 봄. 크게 확 바뀌는 변속이 있으면 그 흐름(구간별 박 간격)을 기준으로 단단히 묶고,
@@ -365,7 +446,8 @@ const TA = (() => {
       }
       return { t: b.t, bpm, res: (b.t - (ic + sl * i)) * 1000 };
     });
-    return { beats: out, period: P, fps, dur: x.length / sr, env, mode };
+    const hits = pickHits(envH, fps, N / (2 * sr));
+    return { beats: out, period: P, fps, dur: x.length / sr, env, mode, hits, grid: hitGrid(hits, out) };
   }
 
   // group beats whose tempo is off the reference into segments
@@ -555,7 +637,7 @@ const TA = (() => {
   // 0:15 살짝 느림, 0:33 꽤 느림, 0:57 크게 빠름 — 봐주는 범위 1~10%에서 점수가 약 50~100%로 고르게 변함
   const DEMO_PLAN = [[80, t => 100 + g(t, 15, 3, -2) + g(t, 33, 3.5, -5) + g(t, 57, 4.5, 9.5)]];
 
-  return { analyze, segments, segmentsArr, detectCuts, landings, songRefs, envLite, lagCandidates, med, synth, wav, DEMO_PLAN };
+  return { analyze, segments, segmentsArr, detectCuts, landings, songRefs, envLite, lagCandidates, med, hitGrid, pickHits, synth, wav, DEMO_PLAN };
 })();
 
 {
@@ -618,14 +700,40 @@ function render(shake){
   const pct=Math.round(inR/bs.length*100);
   const rmin=Math.min(...R),rmax=Math.max(...R);
   $('rRef').textContent=rmax-rmin<0.5?R[0].toFixed(1):`${Math.round(rmin)}~${Math.round(rmax)}`;
-  $('rJit').textContent=jit.toFixed(0)+'ms';$('rSeg').textContent=segs.length+'곳';
+  $('rJit').textContent=res.grid?res.grid.med.toFixed(0)+'ms':jit.toFixed(0)+'ms';$('rSeg').textContent=segs.length+'곳';
   Object.assign(res,{segs,R,thrB,v});lastPct=pct;
   if(shake)verdict(pct);else setHero(pct);
   $('list').innerHTML=segs.length?`<table class="stack"><thead><tr><th>구간</th><th>판정</th><th>평균 BPM</th><th>최대 차이</th><th>길이</th><th>한마디</th></tr></thead><tbody>${segs.map((s,i)=>{const k=s.sign>0?'f':'s',w=say(s);return`<tr data-t="${s.t0}" data-i="${i}"><td class="n">${fmt(s.t0)}–${fmt(s.t1)}</td><td><span class="tag ${k}">${s.sign>0?'빠름':'느림'}</span></td><td class="n">${s.avg.toFixed(1)}</td><td class="n">${s.peak>0?'+':''}${s.peak.toFixed(1)} BPM</td><td class="n">${s.n}박</td><td class="q"><img class="mini" src="${IMG[w.img][0]}" alt="">${w.txt}</td></tr>`}).join('')}</tbody></table>`
     :'<div class="empty">걸린 데가 없네요. 봐주는 범위를 좁혀 보세요. 플레처라면 정확히 맞췄을 거예요.</div>';
-  renderCuts();renderLands();renderSongRow();
+  renderCuts();renderLands();renderSongRow();renderGrid();
   draw();
 }
+function renderGrid(){
+  const g=res&&res.grid;$('gridBox').hidden=!g;if(!g)return;
+  $('gMed').textContent=g.med.toFixed(1)+'ms';$('gHits').textContent=g.n+'개';$('gSegs').textContent=g.segs.length+'곳';
+  $('gList').innerHTML=g.segs.length?g.segs.map(s=>`<div class="cut land" data-t="${s.t0}"><span class="n">${fmt(s.t0)}–${fmt(s.t1)}</span><span>최대 <b>${s.peak.toFixed(0)}ms</b></span><span class="mute">평소의 ${(s.peak/g.med).toFixed(1)}배로 흩어짐</span></div>`).join('')
+    :'<p class="pnote">평소보다 확 흩어진 구간은 없어요.</p>';
+  const L=['1','e','&','a'],sl=g.slot;
+  if(sl.some(v=>v!=null)){
+    const txt=sl.map((v,i)=>v==null?null:`${L[i]} ${v>0?'+':''}${v.toFixed(1)}ms`).filter(Boolean).join(' · ');
+    const big=sl.map((v,i)=>[v,i]).filter(([v])=>v!=null&&Math.abs(v)>=8).map(([v,i])=>`‘${L[i]}’가 ${v>0?'늦게':'일찍'}`);
+    $('gSlot').innerHTML=`16분 자리별 평균 어긋남: ${txt}`+(big.length?`<br><b>${big.join(', ')} 들어가는 버릇이 보여요.</b>`:'');
+  }else $('gSlot').textContent='';
+  drawGrid();
+}
+function drawGrid(){
+  const s=$('svg2'),g=res&&res.grid;if(!g||!s)return;const W=s.clientWidth,H=s.clientHeight;if(!W)return;
+  const L=geo?geo.L:46,R=12,T=10,B=22,top=Math.max(30,Math.ceil(Math.max(...g.wins.map(w=>w.spread))/10)*10);
+  const X=t=>L+(W-L-R)*t/dur,Y=v=>T+(H-T-B)*(1-Math.min(v,top)/top);
+  let o='';for(const sg of g.segs)o+=`<rect x="${X(sg.t0)}" y="${T}" width="${Math.max(3,X(sg.t1)-X(sg.t0))}" height="${H-T-B}" fill="var(--fast)" opacity=".22"/>`;
+  for(let v=0;v<=top;v+=top>60?20:10)o+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)" stroke-width=".6"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--mute)">${v}</text>`;
+  o+=`<line x1="${L}" x2="${W-R}" y1="${Y(g.thr)}" y2="${Y(g.thr)}" stroke="var(--fast)" stroke-dasharray="4 4" opacity=".8"/>`;
+  o+=`<polyline points="${g.wins.map(w=>X(w.t).toFixed(1)+','+Y(w.spread).toFixed(1)).join(' ')}" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>`;
+  o+=`<text x="${W-R-4}" y="${T+11}" text-anchor="end" font-size="11" fill="var(--mute)">ms · 점선 위면 흩어짐</text><line id="ph2" x1="${L}" x2="${L}" y1="${T}" y2="${H-B}" stroke="#fff" stroke-width="1.5" opacity="0"/>`;
+  s.innerHTML=o;
+}
+$('gList').addEventListener('click',e=>{const r=e.target.closest('[data-t]');if(r)play(+r.dataset.t-2)});
+$('fig2').addEventListener('click',e=>{if(!geo||!dur)return;const r=e.currentTarget.getBoundingClientRect();const t=(e.clientX-r.left-geo.L)/(r.width-geo.L-12)*dur;if(t>=0&&t<=dur)play(t)});
 function renderCuts(){
   const show=$('refMode').value==='med'&&res.cuts&&res.cuts.length;
   $('cutBox').hidden=!show;if(!show)return;
@@ -697,11 +805,12 @@ function movePh(){
   const p=$('ph'),a=$('aud');if(!p||!geo||!dur)return;
   const t=a.currentTime,x=geo.L+(geo.W-geo.L-geo.R)*t/dur;
   p.setAttribute('x1',x);p.setAttribute('x2',x);p.setAttribute('opacity',t>0?1:0);
+  const p2=$('ph2');if(p2){const W2=$('svg2').clientWidth,x2=geo.L+(W2-geo.L-12)*t/dur;p2.setAttribute('x1',x2);p2.setAttribute('x2',x2);p2.setAttribute('opacity',t>0?1:0)}
   const pl=$('phl');if(pl&&res.beats.length){let b=res.beats[0];for(const q of res.beats){if(q.t>t)break;b=q}
     const right=x>geo.W*0.75;pl.setAttribute('x',right?x-6:x+6);pl.setAttribute('text-anchor',right?'end':'start');pl.textContent=(b.bpm*mult).toFixed(1)+' BPM';pl.setAttribute('opacity',t>0?1:0)}
   if(!a.paused&&res.segs){const sg=res.segs.find(s=>t>=s.t0&&t<=s.t1)||null;if(sg&&sg!==lastSeg){if(sg!==clicked)toast(sg);clicked=null}lastSeg=sg}
 }
-const ro=new ResizeObserver(draw);ro.observe($('fig'));
+const ro=new ResizeObserver(draw);ro.observe($('fig'));const ro2=new ResizeObserver(()=>drawGrid());ro2.observe($('fig2'));
 function play(t){const a=$('aud');a.currentTime=Math.max(0,t);lastSeg=null;const p=a.play();if(p)p.catch(()=>{});movePh()}
 $('fig').addEventListener('click',e=>{if(!geo||!dur)return;const r=e.currentTarget.getBoundingClientRect();const t=(e.clientX-r.left-geo.L)/(geo.W-geo.L-geo.R)*dur;if(t>=0&&t<=dur)play(t)});
 $('list').addEventListener('click',e=>{const tr=e.target.closest('tr[data-t]');if(!tr)return;const sg=res.segs[+tr.dataset.i];clicked=sg;play(+tr.dataset.t-2);if(sg)toast(sg)});

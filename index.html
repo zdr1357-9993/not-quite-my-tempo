@@ -103,7 +103,7 @@ h2{font-size:24px}
 </section>
 
 <div class="ctrl">
-  <button type="button" class="rec" id="rec" hidden>● 녹음 시작</button><label class="file" id="fileLbl"><span id="fileTxt">녹음 올리기</span><input type="file" id="file" accept="audio/*,.m4a,.mp3,.wav,.aac,.caf"></label>
+  <button type="button" class="rec" id="rec" hidden>● 녹음 시작</button><label class="file" id="fileLbl"><span id="fileTxt">녹음 올리기</span><input type="file" id="file"></label>
   <label>대략 BPM<input type="number" id="hint" value="110" min="40" max="240" inputmode="numeric"></label>
   <label>기준 템포<select id="refMode"><option value="med">내 평균 (변속 자동)</option><option value="song">원곡이랑 비교</option><option value="fix">직접 입력</option></select></label>
   <label id="fixWrap" hidden>기준 BPM<input type="number" id="fix" value="100" min="40" max="240" step="0.5" inputmode="decimal"></label>
@@ -118,14 +118,16 @@ h2{font-size:24px}
     <li>녹음 아래에 나오는 <b>···</b> 버튼을 누르고 <b>공유</b>를 눌러요.</li>
     <li>공유 창을 아래로 내려서 <b>‘파일에 저장’</b>을 눌러요.</li>
     <li>저장할 곳으로 <b>나의 iPhone</b>이나 <b>iCloud Drive</b> 안의 폴더를 고르고 <b>저장</b>. 처음에 ‘드럼’ 폴더를 하나 만들어 두면 다음부터 찾기 편해요.</li>
-    <li>여기로 돌아와서 <b>‘파일에서 가져오기’</b> → 아래쪽 <b>찾아보기</b> → 아까 그 폴더 → 녹음 파일을 누르면 끝.</li>
+    <li>여기로 돌아와서 <b>‘파일에서 가져오기’</b>를 누르고, 뜨는 메뉴에서 <b>‘파일 선택’</b>을 골라요.</li>
+    <li>처음엔 ‘최근 항목’이 보여요. 아래쪽 <b>찾아보기</b> 탭 → <b>나의 iPhone</b>(또는 iCloud Drive) → <b>드럼</b> 폴더 → 녹음 파일을 누르면 끝.</li>
   </ol>
+  <p>폴더는 보이는데 파일이 흐리게 나와서 안 눌리면, 새로고침해서 이 페이지 최신판을 받아 주세요. 예전 판은 음성 메모의 새 파일 형식(.qta)을 못 고르게 막고 있었어요.</p>
   <p>한 번 가져온 녹음은 ‘내 녹음’에 저장돼서, 다음부터는 목록에서 바로 열면 돼요. 앞으로는 ‘녹음 시작’으로 여기서 바로 녹음하는 게 제일 편해요.</p>
 </details>
 
 <section class="panel" id="songBox" hidden>
   <h3>원곡</h3>
-  <div class="prow"><select id="song" aria-label="원곡 고르기"></select><label class="file small"><span>원곡 올리기</span><input type="file" id="songFile" accept="audio/*,.m4a,.mp3,.wav,.aac"></label></div>
+  <div class="prow"><select id="song" aria-label="원곡 고르기"></select><label class="file small"><span>원곡 올리기</span><input type="file" id="songFile"></label></div>
   <div class="prow" id="nudgeRow" hidden><span class="mute">원곡 위치</span><span class="seg2"><button id="nb" type="button">◀ 1박</button><button id="nf" type="button">1박 ▶</button></span><span id="alignInfo" class="mute"></span></div>
   <p class="pnote">원곡 템포 곡선을 내 연주에 맞춰 겹쳐요. 그래프의 흰 점선이 원곡 템포예요. 변속 자리가 내 연주랑 어긋나 보이면 ◀ ▶로 맞춰 주세요. 원곡 파일(mp3·m4a)이 있어야 하고, 멜론·스포티파이 같은 스트리밍 음원은 파일로 꺼낼 수 없어요.</p>
 </section>
@@ -630,7 +632,7 @@ $('file').addEventListener('change',async e=>{
     const x=await decode(f);isDemo=false;
     if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(f);$('aud').src=url;
     curId=await addTake(f,x.length/SR);run(x);
-  }catch(err){status('이 파일은 못 열겠어요. m4a, mp3, wav 파일로 올려 주세요.')}
+  }catch(err){status(/\.qta$/i.test(f.name)?'이 녹음(.qta)은 못 열었어요. 음성 메모에서 녹음을 덧씌운 경우 이렇게 될 수 있어요. 앞으로는 ‘녹음 시작’으로 여기서 바로 녹음해 주세요.':'이 파일은 못 열겠어요. 소리 파일(m4a, mp3, wav)인지 봐 주세요.')}
   e.target.value='';
 });
 $('hint').addEventListener('change',()=>{if(lastX)run(lastX)});

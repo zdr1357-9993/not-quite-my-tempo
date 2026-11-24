@@ -69,7 +69,7 @@ tbody tr{cursor:pointer}tbody tr:hover{background:var(--band)}td.q{color:var(--i
 .cut{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;border-top:1px solid var(--line);padding:8px 0}.cut:first-of-type{border-top:0}
 .cut .n{font:400 17px Anton,sans-serif;letter-spacing:.03em;min-width:3.2em}.cut.on .n{color:var(--fast)}.cut.off{opacity:.6}.cut.land{cursor:pointer}.cut.land b{font:400 17px Anton,sans-serif}
 .sm{min-height:40px;font-size:14px;padding:0 12px}#songName{flex:1 1 160px;min-height:40px}#songAud{width:100%;margin:6px 0}.srow{display:flex;gap:6px;align-items:center;border-top:1px solid var(--line);padding:6px 0}.srow:first-child{border-top:0}.srow .pick{flex:1;text-align:left;background:none;border:0;padding:4px;display:flex;flex-direction:column;align-items:flex-start;line-height:1.3}.srow .pick small{color:var(--mute);font-size:12.5px}.srow.cur .pick{color:var(--fast)}.srow.cur .pick::before{content:'● ';font-size:11px}.srow input.rn{flex:1;min-height:40px}.bk{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.bk .file{display:inline-flex;align-items:center;cursor:pointer}.rec2{border-color:var(--fast);font-weight:700;font-variant-numeric:tabular-nums}.rec2.on{background:#7d0f14;color:#fff;animation:pulse 1s infinite}.sm.yes{border-color:var(--fast);color:var(--ink)}
-.tg{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--mute)}.tg input{width:84px;min-height:40px}
+.warn{color:#ffb4b8;font-weight:700}.tg{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--mute)}.tg input{width:84px;min-height:40px}
 .guide{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 14px;margin:0 0 16px}
 .guide summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700}
 .guide ol{margin:4px 0 8px;padding-left:22px}.guide li{margin:6px 0}.guide p{color:var(--mute);font-size:14px;margin:0 0 12px}
@@ -120,7 +120,11 @@ h2{font-size:24px}
   <p class="pnote" id="noMic" hidden>이 화면에서는 마이크를 못 써서 ‘원곡 녹음하기’가 안 보여요. 사파리에서 직접 열거나 홈 화면 아이콘으로 열어 주세요.</p>
   <div class="prow"><input type="text" id="songName" placeholder="곡 이름 (안 적으면 날짜로)" aria-label="곡 이름" autocomplete="off"><button type="button" class="sm rec2" id="songRec" hidden>● 원곡 녹음하기</button></div>
   <p class="pnote" id="songRecNote" hidden>유튜브 뮤직 같은 데서 원곡을 <b>다른 기기</b>(아이패드, 맥, 스피커)로 틀고, 이 폰을 스피커 가까이 둔 채 ‘원곡 녹음하기’를 누르세요. 다 들었으면 다시 누르면 원곡 목록에 저장돼요. 녹음한 소리도 같이 저장돼서 ▶로 다시 들을 수 있어요. 같은 폰으로 틀면 녹음을 시작할 때 음악이 멈출 수 있어요.</p>
-  <div class="prow" id="nudgeRow" hidden><span class="mute">원곡 위치</span><span class="seg2"><button id="nb" type="button">◀ 1박</button><button id="nf" type="button">1박 ▶</button></span><span id="alignInfo" class="mute"></span></div>
+  <div id="nudgeRow" hidden>
+    <p class="pnote" id="alignInfo"></p>
+    <div class="prow"><span class="mute">원곡 어디서 들어갔어요?</span><input type="text" id="posIn" inputmode="decimal" placeholder="예: 2:00" aria-label="원곡에서 들어간 위치" style="width:96px;min-height:40px"><button type="button" class="sm yes" id="posGo">맞추기</button><button type="button" class="sm" id="posAuto">자동</button></div>
+    <div class="prow"><span class="mute">살짝 밀기</span><span class="seg2"><button id="nb" type="button">◀ 1박</button><button id="nf" type="button">1박 ▶</button></span></div>
+  </div>
   <p class="pnote">원곡 템포 곡선을 내 연주에 맞춰 겹쳐요. 그래프의 흰 점선이 원곡 템포예요. 변속 자리가 내 연주랑 어긋나 보이면 ◀ ▶로 맞춰 주세요. 원곡 파일(mp3·m4a)이 있어야 하고, 멜론·스포티파이 같은 스트리밍 음원은 파일로 꺼낼 수 없어요.</p>
 </section>
 
@@ -176,7 +180,7 @@ h2{font-size:24px}
 <div class="panel">
   <p class="pnote" style="margin-top:0">원곡과 내 녹음은 이 폰의 브라우저 안에 저장돼요. 사파리에서 그냥 열어 쓰면, 7일 동안 안 들어올 경우 사파리가 지워 버릴 수 있어요. <b>공유 → 홈 화면에 추가</b>해서 그 아이콘으로 열면 이 규칙에서 빠져요. 그래도 폰을 바꾸거나 할 때를 위해 가끔 백업 파일을 만들어 두세요.</p>
   <p id="storeInfo" class="pnote"></p>
-  <p class="pnote">앱 버전 11/24 18:11</p>
+  <p class="pnote">앱 버전 11/24 18:28</p>
   <div class="bk"><button type="button" id="bkOut">백업 파일 만들기</button><label class="file small"><span>백업 불러오기</span><input type="file" id="bkIn"></label></div>
 </div>
 </div>
@@ -250,7 +254,8 @@ const TA = (() => {
   }
 
   function estimatePeriod(env, fps, hint, strict) {
-    const lo = Math.floor(fps * 60 / 220), hi = Math.ceil(fps * 60 / 50);
+    // 원곡을 알 때(strict): 같은 곡이니 원곡 템포 ±12% 안에서만 찾음
+    const lo = strict ? Math.floor(fps * 60 / (hint * 1.12)) : Math.floor(fps * 60 / 220), hi = strict ? Math.ceil(fps * 60 / (hint / 1.12)) : Math.ceil(fps * 60 / 50);
     const n = Math.min(env.length, Math.round(fps * 90)); // first 90s is plenty
     let best = -1, bl = lo, sc = [];
     for (let L = lo; L <= hi; L++) {
@@ -258,7 +263,7 @@ const TA = (() => {
       for (let t = 0; t + L < n; t++) s += env[t] * env[t + L];
       s /= (n - L);
       const bpm = 60 * fps / L;
-      const w = Math.exp(-0.5 * (Math.log2(bpm / hint) / (strict ? 0.25 : 0.9)) ** 2);
+      const w = strict ? 1 : Math.exp(-0.5 * (Math.log2(bpm / hint) / 0.9) ** 2);
       sc[L] = s * w;
       if (sc[L] > best) { best = sc[L]; bl = L; }
     }
@@ -310,7 +315,8 @@ const TA = (() => {
   function analyze(x, sr, opt = {}) {
     const hint = opt.hint || 110;
     const { env, fps } = onsetEnvelope(x, sr);
-    const P = estimatePeriod(env, fps, hint, !!opt.strict);
+    // 원곡을 알면 그 템포를 출발점으로 그대로 씀 (짧은 연주는 자기상관이 엇박 패턴에 속기 쉬움)
+    const P = opt.strict ? 60 * fps / hint : estimatePeriod(env, fps, hint, false);
     // 1차: 느슨하게 묶어 전체 흐름을 봄. 크게 확 바뀌는 변속이 있으면 그 흐름(구간별 박 간격)을 기준으로 단단히 묶고,
     // 없으면(출렁이기만 하는 곡) 곡 전체 박 간격 기준으로 단단히 묶음 — 이쪽이 실제 합주 녹음에서 더 정확함
     const loose = trackBeats(env, P, 40);
@@ -449,10 +455,11 @@ const TA = (() => {
     for (let i = 0; i < n; i++) { let m = 0; for (let j = 0; j < k; j++) m = Math.max(m, env[i * k + j]); o[i] = +m.toFixed(3); }
     return { env: o, fps: fps / k }; }
   // 소리로 겹쳐 보기: 정규화 상관이 높은 시간차 후보들 (원곡 시각 = 내 시각 + lag)
-  function lagCandidates(a, b, f, maxN = 8) {
+  function lagCandidates(a, b, f, maxN = 8, win = null) {
     const z = x => { let m = 0; for (const q of x) m += q; m /= x.length || 1; let s = 0; for (const q of x) s += (q - m) ** 2; s = Math.sqrt(s) || 1; return Float32Array.from(x, q => (q - m) / s); };
     const A = z(a), B = z(b), out = [];
-    const lo = -Math.round(30 * f), hi = B.length - Math.round(A.length * 0.5);
+    let lo = -Math.round(30 * f), hi = B.length - Math.round(A.length * 0.5);
+    if (win) { lo = Math.max(lo, Math.round(win[0] * f)); hi = Math.min(hi, Math.round(win[1] * f)); if (hi < lo) return []; }
     const sc = new Float64Array(hi - lo + 1);
     for (let L = lo; L <= hi; L++) {
       const i0 = Math.max(0, -L), i1 = Math.min(A.length, B.length - L);
@@ -480,20 +487,28 @@ const TA = (() => {
     const n = v.length, CAP = 12;
     const cost = s => { let c = 0; for (let i = 0; i < n; i++) { const j = s + i; c += (j < 0 || j >= O.length) ? CAP : Math.min(CAP, Math.abs(v[i] - O[j])); } return c / n; };
     const near = t => { let j0 = 0; for (let j = 0; j < OT.length; j++) if (Math.abs(OT[j] - t) < Math.abs(OT[j0] - t)) j0 = j; return j0; };
-    let bs = null, best = Infinity;
-    if (al && al.take && al.orig && al.take.env.length > 20 && al.orig.env.length > 20) {
-      for (const c of lagCandidates(al.take.env, al.orig.env, al.take.fps)) {
-        const s = near(tb[0].t + c.lag) - 0;
-        const cs = cost(s) - 0.5 * c.s / (al.take.env.length || 1) * 0; // 소리 점수는 후보 고르기에만 씀
-        if (cs < best) { best = cs; bs = s; }
-      }
+    let bs = null, best = Infinity, sure = true;
+    const ok = al && al.take && al.orig && al.take.env.length > 20 && al.orig.env.length > 20;
+    if (al && al.hint != null) {
+      // 내가 알려 준 위치(내 첫 박 = 원곡 hint초) 근처 ±4초에서 소리가 가장 잘 맞는 곳
+      const lag0 = al.hint - tb[0].t;
+      const cs = ok ? lagCandidates(al.take.env, al.orig.env, al.take.fps, 3, [lag0 - 4, lag0 + 4]) : [];
+      // 소리가 뚜렷하게 한 곳을 가리킬 때만 옮기고, 아니면 알려 준 위치를 그대로 믿음
+      const clear = cs.length && (cs.length < 2 || cs[0].s > cs[1].s * 1.15);
+      bs = near(tb[0].t + (clear ? cs[0].lag : lag0));
+    } else if (ok) {
+      const cs = lagCandidates(al.take.env, al.orig.env, al.take.fps);
+      // 확신도: 1등 소리 점수가 2등보다 뚜렷이 높아야 함 (드럼만 녹음된 짧은 연주는 보통 애매함)
+      sure = cs.length < 2 || cs[0].s > cs[1].s * 1.15;
+      for (const c of cs) { const s = near(tb[0].t + c.lag), v = cost(s); if (v < best) { best = v; bs = s; } }
+      if (!sure && tb[tb.length - 1].t - tb[0].t > 150) sure = true; // 2분 반 넘게 친 녹음은 템포 곡선으로 충분히 가려짐
     }
     if (bs === null) {
       for (let s = -Math.floor(n / 2); s <= O.length - Math.ceil(n / 2); s++) { const c = cost(s) + 0.002 * Math.abs(s); if (c < best) { best = c; bs = s; } }
     }
     const s = bs + nudge;
     const R = v.map((_, i) => O[Math.max(0, Math.min(O.length - 1, s + i))]);
-    return { R, start: OT[Math.max(0, Math.min(OT.length - 1, s))], shift: s };
+    return { R, start: OT[Math.max(0, Math.min(OT.length - 1, s))], shift: s, sure: al && al.hint != null ? true : sure };
   }
 
   // demo drum track with known drift
@@ -547,7 +562,7 @@ const TA = (() => {
 const $=id=>document.getElementById(id);
 const SR=22050;
 let curId=null,lastPct=null,clicked=null,res=null,mult=1,dur=0,url=null,isDemo=true,lastX=null,geo=null,lastSeg=null,toastT=0,countT=0;
-let song=null,nudge=0,songInfo=null;
+let song=null,nudge=0,songInfo=null,songHint=null;
 const fmt=t=>{t=Math.max(0,t);const m=Math.floor(t/60),s=Math.floor(t%60);return m+':'+String(s).padStart(2,'0')};
 const status=h=>$('status').innerHTML=h;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -576,7 +591,7 @@ function refs(){
   const bs=res.beats,v=bs.map(b=>b.bpm*mult),mode=$('refMode').value;
   songInfo=null;
   if(mode==='fix'){const f=+$('fix').value||100;return v.map(()=>f)}
-  if(mode==='song'&&song){const r=TA.songRefs(bs,song.beats,mult,nudge,song.env&&res.al?{take:res.al,orig:song.env}:null);if(r){songInfo=r;return r.R}}
+  if(mode==='song'&&song){const r=TA.songRefs(bs,song.beats,mult,nudge,{take:res.al,orig:song.env||null,hint:songHint});if(r){songInfo=r;return r.R}}
   const ok=(res.cuts||[]).filter(c=>c.ok===true).sort((a,b)=>a.i-b.i);
   if(!ok.length||mode!=='med'){const m=TA.med(v);return v.map(()=>m)}
   const out=new Array(v.length),idx=[0,...ok.map(c=>c.i),v.length];
@@ -631,9 +646,13 @@ function renderLands(){
 function renderSongRow(){
   const on=$('refMode').value==='song'&&!!song&&!!songInfo;
   $('nudgeRow').hidden=!on;
-  if(on)$('alignInfo').textContent=`내 첫 박 = 원곡 ${fmt(songInfo.start)}`+(nudge?` (${nudge>0?'+':''}${nudge}박)`:'');
+  if(!on)return;
+  const how=songHint!=null?'알려 준 위치 기준':'자동으로 찾음',nd=nudge?` (${nudge>0?'+':''}${nudge}박)`:'';
+  $('alignInfo').innerHTML=songInfo.sure?`내 첫 박 = 원곡 <b>${fmt(songInfo.start)}</b> · ${how}${nd}`
+    :`<span class="warn">원곡 어디쯤인지 확신을 못 해요.</span> 지금은 원곡 ${fmt(songInfo.start)}에 맞춰 봤어요. 들어간 위치를 적고 ‘맞추기’를 눌러 주세요.`;
+  if(document.activeElement!==$('posIn'))$('posIn').value=songHint!=null?fmt(songHint):'';
 }
-async function saveCuts(){if(!curId)return;try{const t=await DB.get('takes',curId);if(t){t.cuts=res.cuts.map(c=>({i:c.i,ok:c.ok,tgt:c.tgt}));t.tgt0=res.tgt0;await DB.put('takes',t)}}catch(e){}}
+async function saveCuts(){if(!curId)return;try{const t=await DB.get('takes',curId);if(t){t.cuts=res.cuts.map(c=>({i:c.i,ok:c.ok,tgt:c.tgt}));t.tgt0=res.tgt0;t.songHint=songHint;await DB.put('takes',t)}}catch(e){}}
 $('cuts').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;const d=b.dataset;
   if(d.ok!=null){const c=res.cuts[+d.ok];c.ok=true;c.tgt=c.tgt??Math.round(c.to*2)/2;res.tgt0=null}
@@ -690,6 +709,8 @@ $('aud').addEventListener('timeupdate',movePh);$('aud').addEventListener('seeked
 $('aud').addEventListener('play',()=>{const f=()=>{movePh();if(!$('aud').paused)requestAnimationFrame(f)};f()});
 $('toast').addEventListener('click',()=>$('toast').classList.remove('on'));
 
+function meta(){return res?{cuts:(res.cuts||[]).map(c=>({i:c.i,ok:c.ok,tgt:c.tgt})),tgt0:res.tgt0,songHint}:null}
+function reSong(){const want=$('refMode').value==='song'&&song?song.id:null;if(lastX&&res&&res.forSong!==want){run(lastX,meta());return true}return false}
 function run(x,saved){
   lastX=x;
   const words=['5,','6,','5, 6,','7,','8!'];let i=0;
@@ -698,8 +719,9 @@ function run(x,saved){
   setTimeout(()=>{
     try{
       const t0=performance.now();
-      res=TA.analyze(x,SR,{hint:+$('hint').value||110});res.al=TA.envLite(res.env,res.fps);res.env=null;
-      dur=res.dur;mult=1;nudge=0;
+      const useSong=$('refMode').value==='song'&&song;
+      res=TA.analyze(x,SR,useSong?{hint:song.med,strict:true}:{hint:+$('hint').value||110});res.al=TA.envLite(res.env,res.fps);res.env=null;res.forSong=useSong?song.id:null;
+      dur=res.dur;mult=1;nudge=0;songHint=saved&&saved.songHint!=null?saved.songHint:null;
       res.cuts=TA.detectCuts(res.beats.map(b=>b.bpm),+$('thr').value).map(c=>({...c,ok:null,tgt:null}));
       if(saved&&saved.cuts)for(const s of saved.cuts){const c=res.cuts.find(c=>Math.abs(c.i-s.i)<=4);if(c){c.ok=s.ok;c.tgt=s.tgt}}
       if(saved&&saved.tgt0!=null)res.tgt0=saved.tgt0;
@@ -725,17 +747,21 @@ $('file').addEventListener('change',async e=>{
   try{
     const x=await decode(f);isDemo=false;
     if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(f);$('aud').src=url;
-    curId=await addTake(f,x.length/SR);run(x);
+    curId=await addTake(f,x.length/SR);songHint=null;run(x);
   }catch(err){status(/\.qta$/i.test(f.name)?'이 녹음(.qta)은 못 열었어요. 음성 메모에서 녹음을 덧씌운 경우 이렇게 될 수 있어요. 앞으로는 ‘녹음 시작’으로 여기서 바로 녹음해 주세요.':'이 파일은 못 열겠어요. 소리 파일(m4a, mp3, wav)인지 봐 주세요.')}
   e.target.value='';
 });
 $('hint').addEventListener('change',()=>{if(lastX)run(lastX)});
-$('refMode').addEventListener('change',()=>{const m=$('refMode').value;$('fixWrap').hidden=m!=='fix';refreshSongs();render(true)});
+$('refMode').addEventListener('change',()=>{const m=$('refMode').value;$('fixWrap').hidden=m!=='fix';refreshSongs();if(!reSong())render(true)});
 $('fix').addEventListener('change',()=>render(true));
 $('thr').addEventListener('input',()=>{$('thrOut').textContent=$('thr').value;render(false)});
 $('thr').addEventListener('change',()=>render(true));
 $('half').addEventListener('click',()=>{mult/=2;render(true)});
 $('dbl').addEventListener('click',()=>{mult*=2;render(true)});
+const parseT=s=>{s=String(s).trim();if(!s)return null;const m=s.match(/^(\d+)[:분.\s]+(\d{1,2})/);if(m)return +m[1]*60+ +m[2];const n=parseFloat(s);return isFinite(n)?n:null};
+$('posGo').addEventListener('click',()=>{const t=parseT($('posIn').value);if(t==null){status('위치를 ‘2:05’처럼 적어 주세요.');return}songHint=t;nudge=0;render(true);saveCuts()});
+$('posIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('posGo').click()});
+$('posAuto').addEventListener('click',()=>{songHint=null;nudge=0;$('posIn').value='';render(true);saveCuts()});
 $('nb').addEventListener('click',()=>{nudge--;render(false)});
 $('nf').addEventListener('click',()=>{nudge++;render(false)});
 
@@ -783,7 +809,7 @@ async function redoSong(id,quiet){
 }
 $('songList').addEventListener('click',async e=>{
   const row=e.target.closest('.srow');if(!row)return;const id=+row.dataset.id,b=e.target.closest('button');if(!b)return;
-  if(b.classList.contains('pick')){song=await DB.get('songs',id);nudge=0;$('refMode').value='song';$('fixWrap').hidden=true;try{localStorage.setItem('nqmt-song',id)}catch(err){}refreshSongs();render(true);return}
+  if(b.classList.contains('pick')){song=await DB.get('songs',id);nudge=0;songHint=null;$('refMode').value='song';$('fixWrap').hidden=true;try{localStorage.setItem('nqmt-song',id)}catch(err){}refreshSongs();if(!reSong())render(true);return}
   if(b.classList.contains('play')){const s=await DB.get('songs',id);if(songUrl)URL.revokeObjectURL(songUrl);songUrl=URL.createObjectURL(new Blob([s.audio],{type:s.type||'audio/mp4'}));const a=$('songAud');a.src=songUrl;a.hidden=false;const q=a.play();if(q)q.catch(()=>{});return}
   if(b.classList.contains('redo')){redoSong(id,false);return}
   if(b.classList.contains('ren')){const s=await DB.get('songs',id),pk=row.querySelector('.pick');const inp=document.createElement('input');inp.className='rn';inp.value=s.name;pk.replaceWith(inp);inp.focus();

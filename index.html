@@ -112,6 +112,18 @@ h2{font-size:24px}
   <label>박 보정<span class="seg2"><button id="half" type="button">÷2</button><button id="dbl" type="button">×2</button></span></label>
 </div>
 
+<section class="panel" id="songBox">
+  <h3>원곡 <span class="mute" style="font:13px 'Noto Sans KR'">변속 있는 곡은 원곡이랑 비교하세요</span></h3>
+  <div id="songList"></div>
+  <div class="prow"><label class="file small"><span>원곡 파일 올리기</span><input type="file" id="songFile"></label></div>
+  <audio id="songAud" controls hidden></audio>
+  <p class="pnote" id="noMic" hidden>이 화면에서는 마이크를 못 써서 ‘원곡 녹음하기’가 안 보여요. 사파리에서 직접 열거나 홈 화면 아이콘으로 열어 주세요.</p>
+  <div class="prow"><input type="text" id="songName" placeholder="곡 이름 (안 적으면 날짜로)" aria-label="곡 이름" autocomplete="off"><button type="button" class="sm rec2" id="songRec" hidden>● 원곡 녹음하기</button></div>
+  <p class="pnote" id="songRecNote" hidden>유튜브 뮤직 같은 데서 원곡을 <b>다른 기기</b>(아이패드, 맥, 스피커)로 틀고, 이 폰을 스피커 가까이 둔 채 ‘원곡 녹음하기’를 누르세요. 다 들었으면 다시 누르면 원곡 목록에 저장돼요. 녹음한 소리도 같이 저장돼서 ▶로 다시 들을 수 있어요. 같은 폰으로 틀면 녹음을 시작할 때 음악이 멈출 수 있어요.</p>
+  <div class="prow" id="nudgeRow" hidden><span class="mute">원곡 위치</span><span class="seg2"><button id="nb" type="button">◀ 1박</button><button id="nf" type="button">1박 ▶</button></span><span id="alignInfo" class="mute"></span></div>
+  <p class="pnote">원곡 템포 곡선을 내 연주에 맞춰 겹쳐요. 그래프의 흰 점선이 원곡 템포예요. 변속 자리가 내 연주랑 어긋나 보이면 ◀ ▶로 맞춰 주세요. 원곡 파일(mp3·m4a)이 있어야 하고, 멜론·스포티파이 같은 스트리밍 음원은 파일로 꺼낼 수 없어요.</p>
+</section>
+
 <details class="guide" id="guide">
   <summary>음성 메모에 있는 녹음 가져오는 법</summary>
   <ol>
@@ -126,16 +138,7 @@ h2{font-size:24px}
   <p>한 번 가져온 녹음은 ‘내 녹음’에 저장돼서, 다음부터는 목록에서 바로 열면 돼요. 앞으로는 ‘녹음 시작’으로 여기서 바로 녹음하는 게 제일 편해요.</p>
 </details>
 
-<section class="panel" id="songBox" hidden>
-  <h3>원곡</h3>
-  <div id="songList"></div>
-  <div class="prow"><label class="file small"><span>원곡 파일 올리기</span><input type="file" id="songFile"></label></div>
-  <audio id="songAud" controls hidden></audio>
-  <div class="prow"><input type="text" id="songName" placeholder="곡 이름 (안 적으면 날짜로)" aria-label="곡 이름" autocomplete="off"><button type="button" class="sm rec2" id="songRec" hidden>● 원곡 녹음하기</button></div>
-  <p class="pnote" id="songRecNote" hidden>유튜브 뮤직 같은 데서 원곡을 <b>다른 기기</b>(아이패드, 맥, 스피커)로 틀고, 이 폰을 스피커 가까이 둔 채 ‘원곡 녹음하기’를 누르세요. 다 들었으면 다시 누르면 원곡 목록에 저장돼요. 녹음한 소리도 같이 저장돼서 ▶로 다시 들을 수 있어요. 같은 폰으로 틀면 녹음을 시작할 때 음악이 멈출 수 있어요.</p>
-  <div class="prow" id="nudgeRow" hidden><span class="mute">원곡 위치</span><span class="seg2"><button id="nb" type="button">◀ 1박</button><button id="nf" type="button">1박 ▶</button></span><span id="alignInfo" class="mute"></span></div>
-  <p class="pnote">원곡 템포 곡선을 내 연주에 맞춰 겹쳐요. 그래프의 흰 점선이 원곡 템포예요. 변속 자리가 내 연주랑 어긋나 보이면 ◀ ▶로 맞춰 주세요. 원곡 파일(mp3·m4a)이 있어야 하고, 멜론·스포티파이 같은 스트리밍 음원은 파일로 꺼낼 수 없어요.</p>
-</section>
+
 
 <section class="takes" id="takesBox" hidden><h3>내 녹음 <span id="takeN"></span></h3><div id="takes"></div><p class="tnote">녹음은 이 폰의 브라우저 안에만 저장돼요. 사파리 방문 기록을 지우면 같이 지워져요.</p></section>
 <div class="fig" id="fig"><svg id="svg" role="img" aria-label="시간에 따른 BPM 그래프"></svg></div>
@@ -172,6 +175,7 @@ h2{font-size:24px}
 <div class="panel">
   <p class="pnote" style="margin-top:0">원곡과 내 녹음은 이 폰의 브라우저 안에 저장돼요. 사파리에서 그냥 열어 쓰면, 7일 동안 안 들어올 경우 사파리가 지워 버릴 수 있어요. <b>공유 → 홈 화면에 추가</b>해서 그 아이콘으로 열면 이 규칙에서 빠져요. 그래도 폰을 바꾸거나 할 때를 위해 가끔 백업 파일을 만들어 두세요.</p>
   <p id="storeInfo" class="pnote"></p>
+  <p class="pnote">앱 버전 11/24 15:58</p>
   <div class="bk"><button type="button" id="bkOut">백업 파일 만들기</button><label class="file small"><span>백업 불러오기</span><input type="file" id="bkIn"></label></div>
 </div>
 </div>
@@ -648,7 +652,7 @@ $('file').addEventListener('change',async e=>{
   e.target.value='';
 });
 $('hint').addEventListener('change',()=>{if(lastX)run(lastX)});
-$('refMode').addEventListener('change',()=>{const m=$('refMode').value;$('fixWrap').hidden=m!=='fix';$('songBox').hidden=m!=='song';if(m==='song')refreshSongs();render(true)});
+$('refMode').addEventListener('change',()=>{const m=$('refMode').value;$('fixWrap').hidden=m!=='fix';refreshSongs();render(true)});
 $('fix').addEventListener('change',()=>render(true));
 $('thr').addEventListener('input',()=>{$('thrOut').textContent=$('thr').value;render(false)});
 $('thr').addEventListener('change',()=>render(true));
@@ -675,7 +679,7 @@ $('takes').addEventListener('click',async e=>{
     try{await DB.del('takes',id)}catch(err){}if(curId===id)curId=null;refreshTakes();return}
   try{status('녹음을 여는 중…');const t=await DB.get('takes',id);const blob=new Blob([t.buf],{type:t.type});const x=await decode(blob);
     isDemo=false;curId=id;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(blob);$('aud').src=url;
-    if(t.songId){const s=await DB.get('songs',t.songId);if(s){song=s;nudge=0;$('refMode').value='song';$('fixWrap').hidden=true;$('songBox').hidden=false;refreshSongs()}}
+    if(t.songId){const s=await DB.get('songs',t.songId);if(s){song=s;nudge=0;$('refMode').value='song';$('fixWrap').hidden=true;refreshSongs()}}
     run(x,t);refreshTakes();window.scrollTo({top:0,behavior:'smooth'})}
   catch(err){status('이 녹음은 못 열겠어요.')}
 });
@@ -684,7 +688,7 @@ async function refreshSongs(){
   try{const all=(await DB.all('songs')).sort((a,b)=>b.id-a.id),cnt={};(await DB.all('takes')).forEach(t=>{if(t.songId)cnt[t.songId]=(cnt[t.songId]||0)+1});
     const pick=all.find(s=>s.id===(song&&song.id))||all.find(s=>s.id===lastSongId)||all[0]||null;
     song=pick;
-    $('songList').innerHTML=all.length?all.map(s=>`<div class="srow${pick&&s.id===pick.id?' cur':''}" data-id="${s.id}"><button type="button" class="pick">${esc(s.name)}<small>${Math.round(s.med)} BPM · ${fmt(s.dur)}${cnt[s.id]?' · 내 녹음 '+cnt[s.id]+'개':''}${s.audio?'':' · 템포만'}</small></button>${s.audio?'<button type="button" class="sm play" aria-label="원곡 듣기">▶</button>':''}<button type="button" class="sm ren">이름</button><button type="button" class="sm del">삭제</button></div>`).join('')
+    $('songList').innerHTML=all.length?all.map(s=>`<div class="srow${pick&&s.id===pick.id&&$('refMode').value==='song'?' cur':''}" data-id="${s.id}"><button type="button" class="pick">${esc(s.name)}<small>${Math.round(s.med)} BPM · ${fmt(s.dur)}${cnt[s.id]?' · 내 녹음 '+cnt[s.id]+'개':''}${s.audio?'':' · 템포만'}</small></button>${s.audio?'<button type="button" class="sm play" aria-label="원곡 듣기">▶</button>':''}<button type="button" class="sm ren">이름</button><button type="button" class="sm del">삭제</button></div>`).join('')
       :'<p class="pnote">아직 원곡이 없어요. 아래에서 녹음하거나 파일을 올려 주세요.</p>';
     if(res)render(false);
   }catch(e){}
@@ -692,7 +696,7 @@ async function refreshSongs(){
 let songUrl=null;
 $('songList').addEventListener('click',async e=>{
   const row=e.target.closest('.srow');if(!row)return;const id=+row.dataset.id,b=e.target.closest('button');if(!b)return;
-  if(b.classList.contains('pick')){song=await DB.get('songs',id);nudge=0;try{localStorage.setItem('nqmt-song',id)}catch(err){}refreshSongs();render(true);return}
+  if(b.classList.contains('pick')){song=await DB.get('songs',id);nudge=0;$('refMode').value='song';$('fixWrap').hidden=true;try{localStorage.setItem('nqmt-song',id)}catch(err){}refreshSongs();render(true);return}
   if(b.classList.contains('play')){const s=await DB.get('songs',id);if(songUrl)URL.revokeObjectURL(songUrl);songUrl=URL.createObjectURL(new Blob([s.audio],{type:s.type||'audio/mp4'}));const a=$('songAud');a.src=songUrl;a.hidden=false;const q=a.play();if(q)q.catch(()=>{});return}
   if(b.classList.contains('ren')){const s=await DB.get('songs',id),pk=row.querySelector('.pick');const inp=document.createElement('input');inp.className='rn';inp.value=s.name;pk.replaceWith(inp);inp.focus();
     const done=async()=>{const v=inp.value.trim();if(v&&v!==s.name){s.name=v.slice(0,60);await DB.put('songs',s)}refreshSongs();refreshTakes()};
@@ -707,7 +711,7 @@ async function addSong(blob,fallbackName){
     if(r.beats.length<16)throw 0;
     const id=Date.now(),name=($('songName').value.trim()||fallbackName||('원곡 '+dt(id))).slice(0,60);
     await DB.put('songs',{id,name,beats:r.beats.map(b=>({t:+b.t.toFixed(3),bpm:+b.bpm.toFixed(2)})),med:TA.med(r.beats.map(b=>b.bpm)),dur:r.dur,audio:await blob.arrayBuffer(),type:blob.type||'audio/mp4'});try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
-    song=await DB.get('songs',id);nudge=0;$('songName').value='';refreshTakes();try{localStorage.setItem('nqmt-song',id)}catch(e){}
+    song=await DB.get('songs',id);nudge=0;$('songName').value='';$('refMode').value='song';$('fixWrap').hidden=true;refreshTakes();try{localStorage.setItem('nqmt-song',id)}catch(e){}
     await refreshSongs();status(`원곡 ‘${esc(name)}’ 저장했어요. 박 ${r.beats.length}개, 평균 ${Math.round(TA.med(r.beats.map(b=>b.bpm)))} BPM.`);
   }catch(err){status('원곡에서 박을 못 찾았어요. 소리가 너무 작거나 짧으면 그래요. 파일이면 m4a, mp3, wav인지 봐 주세요.')}
 }
@@ -739,6 +743,7 @@ $('bkIn').addEventListener('change',async e=>{
 storeInfo();refreshSongs();
 
 let recState=null;
+$('noMic').hidden=!!(window.self===window.top&&navigator.mediaDevices&&window.MediaRecorder);
 async function toggleRec(btn,label,stopLabel,msg,onBlob){
   if(recState){if(recState.btn===btn)recState.mr.stop();return}
   try{
@@ -755,7 +760,7 @@ if(window.self===window.top&&navigator.mediaDevices&&window.MediaRecorder){
   const b=$('rec');b.hidden=false;$('fileLbl').classList.add('alt');$('fileTxt').textContent='파일에서 가져오기';
   b.addEventListener('click',()=>toggleRec(b,'● 녹음 시작','■ 멈추고 판정받기','녹음 중이에요. 다 쳤으면 버튼을 다시 누르세요.',async blob=>{
     try{status('녹음을 여는 중…');const x=await decode(blob);isDemo=false;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(blob);$('aud').src=url;curId=await addTake(blob,x.length/SR);run(x)}catch(err){status('녹음을 못 열었어요. 다시 해 주세요.')}}));
-  const sb=$('songRec');sb.hidden=false;$('songRecNote').hidden=false;
+  const sb=$('songRec');sb.hidden=false;$('songRecNote').hidden=false;$('noMic').hidden=true;
   sb.addEventListener('click',()=>toggleRec(sb,'● 원곡 녹음하기','■ 멈추고 템포 저장','원곡 녹음 중이에요. 다른 기기에서 원곡을 틀어 주세요. 다 들었으면 버튼을 다시 누르세요.',blob=>addSong(blob,'')));
 }
 

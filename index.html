@@ -60,6 +60,18 @@ tbody tr{cursor:pointer}tbody tr:hover{background:var(--band)}td.q{color:var(--i
 .toast.on{translate:0 0}.toast img{display:block;width:100%;max-height:190px;object-fit:contain;background:#000}.toast p{margin:0;padding:8px 12px;font:400 17px 'Black Han Sans'}
 .toast.s{border-color:var(--slow)}
 .count{font:400 22px Anton,sans-serif;color:var(--fast);letter-spacing:.08em}
+.mute{color:var(--mute)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:0 0 16px}.panel h3{margin:0 0 6px;font:400 18px 'Black Han Sans'}
+.pnote{margin:6px 0 0;font-size:13px;color:var(--mute)}
+.prow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}.prow select{flex:1 1 180px}
+.ctrl .file.small,.prow .file.small{display:inline-flex;align-items:center;cursor:pointer;background:var(--card);border-color:var(--line);color:var(--ink);font:500 15px 'Noto Sans KR',sans-serif}
+.cut{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;border-top:1px solid var(--line);padding:8px 0}.cut:first-of-type{border-top:0}
+.cut .n{font:400 17px Anton,sans-serif;letter-spacing:.03em;min-width:3.2em}.cut.on .n{color:var(--fast)}.cut.off{opacity:.6}.cut.land{cursor:pointer}.cut.land b{font:400 17px Anton,sans-serif}
+.sm{min-height:40px;font-size:14px;padding:0 12px}.sm.yes{border-color:var(--fast);color:var(--ink)}
+.tg{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--mute)}.tg input{width:84px;min-height:40px}
+.guide{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 14px;margin:0 0 16px}
+.guide summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700}
+.guide ol{margin:4px 0 8px;padding-left:22px}.guide li{margin:6px 0}.guide p{color:var(--mute);font-size:14px;margin:0 0 12px}
 @media(max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){
 .band{padding:18px 14px 110px}
@@ -91,18 +103,48 @@ h2{font-size:24px}
 </section>
 
 <div class="ctrl">
-  <button type="button" class="rec" id="rec" hidden>● 녹음 시작</button><label class="file" id="fileLbl"><span id="fileTxt">녹음 올리기</span><input type="file" id="file" accept="audio/*,video/*,.m4a,.mp3,.wav,.aac,.caf"></label>
+  <button type="button" class="rec" id="rec" hidden>● 녹음 시작</button><label class="file" id="fileLbl"><span id="fileTxt">녹음 올리기</span><input type="file" id="file" accept="audio/*,.m4a,.mp3,.wav,.aac,.caf"></label>
   <label>대략 BPM<input type="number" id="hint" value="110" min="40" max="240" inputmode="numeric"></label>
-  <label>기준 템포<select id="refMode"><option value="med">내 평균</option><option value="fix">직접 입력</option></select></label>
+  <label>기준 템포<select id="refMode"><option value="med">내 평균 (변속 자동)</option><option value="song">원곡이랑 비교</option><option value="fix">직접 입력</option></select></label>
   <label id="fixWrap" hidden>기준 BPM<input type="number" id="fix" value="100" min="40" max="240" step="0.5" inputmode="decimal"></label>
   <label><span>봐주는 범위 ±<output id="thrOut">2.5</output> BPM</span><input type="range" id="thr" min="0.5" max="10" step="0.5" value="2.5"></label>
   <label>박 보정<span class="seg2"><button id="half" type="button">÷2</button><button id="dbl" type="button">×2</button></span></label>
 </div>
 
+<details class="guide" id="guide">
+  <summary>음성 메모에 있는 녹음 가져오는 법</summary>
+  <ol>
+    <li><b>음성 메모</b> 앱을 열고 가져올 녹음을 눌러요.</li>
+    <li>녹음 아래에 나오는 <b>···</b> 버튼을 누르고 <b>공유</b>를 눌러요.</li>
+    <li>공유 창을 아래로 내려서 <b>‘파일에 저장’</b>을 눌러요.</li>
+    <li>저장할 곳으로 <b>나의 iPhone</b>이나 <b>iCloud Drive</b> 안의 폴더를 고르고 <b>저장</b>. 처음에 ‘드럼’ 폴더를 하나 만들어 두면 다음부터 찾기 편해요.</li>
+    <li>여기로 돌아와서 <b>‘파일에서 가져오기’</b> → 아래쪽 <b>찾아보기</b> → 아까 그 폴더 → 녹음 파일을 누르면 끝.</li>
+  </ol>
+  <p>한 번 가져온 녹음은 ‘내 녹음’에 저장돼서, 다음부터는 목록에서 바로 열면 돼요. 앞으로는 ‘녹음 시작’으로 여기서 바로 녹음하는 게 제일 편해요.</p>
+</details>
+
+<section class="panel" id="songBox" hidden>
+  <h3>원곡</h3>
+  <div class="prow"><select id="song" aria-label="원곡 고르기"></select><label class="file small"><span>원곡 올리기</span><input type="file" id="songFile" accept="audio/*,.m4a,.mp3,.wav,.aac"></label></div>
+  <div class="prow" id="nudgeRow" hidden><span class="mute">원곡 위치</span><span class="seg2"><button id="nb" type="button">◀ 1박</button><button id="nf" type="button">1박 ▶</button></span><span id="alignInfo" class="mute"></span></div>
+  <p class="pnote">원곡 템포 곡선을 내 연주에 맞춰 겹쳐요. 그래프의 흰 점선이 원곡 템포예요. 변속 자리가 내 연주랑 어긋나 보이면 ◀ ▶로 맞춰 주세요. 원곡 파일(mp3·m4a)이 있어야 하고, 멜론·스포티파이 같은 스트리밍 음원은 파일로 꺼낼 수 없어요.</p>
+</section>
+
 <section class="takes" id="takesBox" hidden><h3>내 녹음 <span id="takeN"></span></h3><div id="takes"></div><p class="tnote">녹음은 이 폰의 브라우저 안에만 저장돼요. 사파리 방문 기록을 지우면 같이 지워져요.</p></section>
 <div class="fig" id="fig"><svg id="svg" role="img" aria-label="시간에 따른 BPM 그래프"></svg></div>
-<div class="legend"><span><i style="background:var(--fast)"></i>빠름</span><span><i style="background:var(--slow)"></i>느림</span><span><i style="background:var(--band);outline:1px solid var(--line)"></i>봐주는 범위</span></div>
+<div class="legend"><span><i style="background:var(--fast)"></i>빠름</span><span><i style="background:var(--slow)"></i>느림</span><span><i style="background:var(--band);outline:1px solid var(--line)"></i>봐주는 범위</span><span><i style="background:none;border-top:2px dashed var(--mute);height:0;border-radius:0"></i>기준</span></div>
 <div class="status" id="status"></div>
+
+<section class="panel" id="cutBox" hidden>
+  <h3>변속 후보</h3>
+  <p class="pnote">템포가 한동안 다른 값에 머문 곳이에요. 일부러 바꾼 건지 흔들린 건지는 치는 사람만 알아요.</p>
+  <div id="cuts"></div>
+</section>
+<section class="panel" id="landBox" hidden>
+  <h3>변속 안착</h3>
+  <p class="pnote">템포가 바뀐 뒤 몇 박 만에 새 템포에 자리 잡았는지예요. 4박 연속으로 봐주는 범위 안에 들어오면 안착으로 쳐요.</p>
+  <div id="lands"></div>
+</section>
 <div class="player"><audio id="aud" controls preload="auto"></audio></div>
 
 <h2>빨랐냐, 느렸냐?</h2>
@@ -113,7 +155,7 @@ h2{font-size:24px}
 <ul class="notes">
   <li>‘녹음 시작’을 누르고 치다가 다시 누르면 바로 판정이 나와요. 녹음은 ‘내 녹음’에 쌓이니까 음성 메모 앱을 따로 안 써도 돼요.</li>
   <li>폰은 드럼에서 1~2m쯤 떨어뜨려 두세요. 너무 가까우면 소리가 찢어져서 박을 잘 못 잡아요.</li>
-  <li>예전에 음성 메모로 녹음한 게 있으면, 음성 메모에서 공유 → ‘파일에 저장’ 한 다음 ‘파일에서 가져오기’로 불러오세요. 웹에서는 음성 메모 앱을 바로 열 수가 없어요.</li>
+  <li>기준 템포는 세 가지예요. <b>원곡이랑 비교</b>는 원곡 템포 곡선을 따라가서 변속이 있어도 정확해요. <b>내 평균</b>은 원곡이 없을 때 쓰고, 템포가 한동안 바뀐 곳을 찾아서 변속인지 물어봐요. <b>직접 입력</b>은 클릭 템포가 정해진 연습용이에요.</li>
   <li>봐주는 범위는 BPM 단위예요. 기준이 100이고 ±2.5면 97.5~102.5 안에 든 박만 통과예요.</li>
   <li>BPM이 반이나 두 배로 나오면 ÷2, ×2를 누르세요. ‘대략 BPM’을 미리 넣어 두면 잘 안 틀려요.</li>
   <li>필인, 브레이크, 하프타임에서는 박을 잘못 잡아서 그래프가 튈 수 있어요. 플레처도 가끔은 억울한 소리를 해요.</li>
@@ -250,7 +292,7 @@ const TA = (() => {
       const sl = (k * sxy - sx * sy) / (k * sxx - sx * sx), ic = (sy - sl * sx) / k;
       return { t: b.t, bpm: 60 / sl, res: (b.t - (ic + sl * i)) * 1000 };
     });
-    return { beats: out, period: P, fps, dur: x.length / sr };
+    return { beats: out, period: P, fps, dur: x.length / sr, env };
   }
 
   // group beats whose tempo is off the reference into segments
@@ -269,6 +311,93 @@ const TA = (() => {
       return { ...s, t0: bs[0].t, t1: bs[bs.length - 1].t, n: bs.length,
         avg: bs.reduce((a, b) => a + b.bpm * mult, 0) / bs.length, peak: pk };
     });
+  }
+
+  const med = a => { const s = [...a].sort((x, y) => x - y); return s.length ? s[s.length >> 1] : 0; };
+
+  // 판정: 박마다 기준(BPM 배열)과 비교해 벗어난 구간 묶기. peak는 BPM 차이
+  function segmentsArr(beats, R, thrB, mult) {
+    const segs = []; let cur = null;
+    beats.forEach((b, i) => {
+      const d = b.bpm * mult - R[i], sign = d > thrB ? 1 : d < -thrB ? -1 : 0;
+      if (sign && cur && cur.sign === sign && i - cur.end <= 2) cur.end = i;
+      else if (sign) { if (cur) segs.push(cur); cur = { sign, start: i, end: i }; }
+    });
+    if (cur) segs.push(cur);
+    return segs.filter(s => s.end - s.start >= 3).map(s => {
+      const ix = []; for (let i = s.start; i <= s.end; i++) ix.push(i);
+      const ds = ix.map(i => beats[i].bpm * mult - R[i]);
+      const pk = s.sign > 0 ? Math.max(...ds) : Math.min(...ds);
+      return { ...s, t0: beats[s.start].t, t1: beats[s.end].t, n: ix.length,
+        avg: ix.reduce((a, i) => a + beats[i].bpm * mult, 0) / ix.length, peak: pk };
+    });
+  }
+
+  // 변속 후보: 앞 16박과 뒤 16박 평균이 크게 다르고, 양쪽이 각각 안정적인 곳
+  function detectCuts(v, thrB, W = 16) {
+    const n = v.length, cuts = [];
+    if (n < 2 * W + 1) return cuts;
+    const mean = (a, b) => { let s = 0; for (let i = a; i < b; i++) s += v[i]; return s / (b - a); };
+    const sd = (a, b) => { const m = mean(a, b); let s = 0; for (let i = a; i < b; i++) s += (v[i] - m) ** 2; return Math.sqrt(s / (b - a)); };
+    const need = Math.max(6, 3 * thrB), stab = Math.max(1.6 * thrB, 2.5), h = W >> 1;
+    const d = new Float64Array(n);
+    for (let i = W; i <= n - W; i++) d[i] = mean(i, i + W) - mean(i - W, i);
+    for (let i = W; i <= n - W; i++) {
+      if (Math.abs(d[i]) < need) continue;
+      let top = true;
+      for (let j = Math.max(W, i - W); j <= Math.min(n - W, i + W); j++) if (Math.abs(d[j]) > Math.abs(d[i])) { top = false; break; }
+      if (!top) continue;
+      if (sd(i - W, i - h) > stab || sd(i + h, i + W) > stab) continue;
+      if (cuts.length && i - cuts[cuts.length - 1].i < W) continue;
+      cuts.push({ i, from: med(v.slice(Math.max(0, i - W), i - h)), to: med(v.slice(i + h, i + W)) });
+    }
+    return cuts;
+  }
+
+  // 기준 곡선에서 계단(변속) 찾기 + 내가 몇 박 만에 안착했는지
+  function landings(R, v, thrB) {
+    const n = R.length, W = 8, out = [];
+    if (n < 2 * W + 1) return out;
+    const mean = (a, b) => { let s = 0; for (let i = a; i < b; i++) s += R[i]; return s / (b - a); };
+    const d = new Float64Array(n);
+    for (let i = W; i <= n - W; i++) d[i] = mean(i, i + W) - mean(i - W, i);
+    for (let i = W; i <= n - W; i++) {
+      if (Math.abs(d[i]) < 4) continue;
+      let top = true;
+      for (let j = Math.max(W, i - W); j <= Math.min(n - W, i + W); j++) if (Math.abs(d[j]) > Math.abs(d[i]) || (Math.abs(d[j]) === Math.abs(d[i]) && j < i)) { top = false; break; }
+      if (!top) continue;
+      let land = -1;
+      const s0 = Math.max(0, i - 4);
+      for (let j = s0; j + 3 < n && j < i + 64; j++) {
+        let ok = true; for (let k = j; k < j + 4; k++) if (Math.abs(v[k] - R[k]) > thrB) { ok = false; break; }
+        if (ok) { land = Math.max(0, j - i); break; }
+      }
+      out.push({ i, from: R[Math.max(0, i - W)], to: R[Math.min(n - 1, i + W)], land });
+    }
+    return out;
+  }
+
+  // 원곡 기준: 원곡 템포 곡선을 내 박 순서에 맞춰 밀어 보며 가장 잘 겹치는 위치를 찾음
+  // (드럼 패턴은 반복이라 소리로 맞추면 헷갈리지만, 변속 위치는 템포 곡선에서 제일 또렷함)
+  function songRefs(tb, ob, mult, nudge = 0) {
+    if (tb.length < 8 || ob.length < 8) return null;
+    const v = tb.map(b => b.bpm * mult), tm = med(v), om = med(ob.map(b => b.bpm));
+    const k = Math.max(-1, Math.min(1, Math.round(Math.log2(om / tm))));
+    let O, OT;
+    if (k === 1) { O = []; OT = []; for (let j = 0; j < ob.length; j += 2) { O.push(ob[j].bpm / 2); OT.push(ob[j].t); } }
+    else if (k === -1) { O = []; OT = []; ob.forEach(b => { O.push(b.bpm * 2, b.bpm * 2); OT.push(b.t, b.t); }); }
+    else { O = ob.map(b => b.bpm); OT = ob.map(b => b.t); }
+    const n = v.length, CAP = 12;
+    let best = Infinity, bs = 0;
+    for (let s = -Math.floor(n / 2); s <= O.length - Math.ceil(n / 2); s++) {
+      let c = 0;
+      for (let i = 0; i < n; i++) { const j = s + i; c += (j < 0 || j >= O.length) ? CAP : Math.min(CAP, Math.abs(v[i] - O[j])); }
+      c = c / n + 0.002 * Math.abs(s);
+      if (c < best) { best = c; bs = s; }
+    }
+    const s = bs + nudge;
+    const R = v.map((_, i) => O[Math.max(0, Math.min(O.length - 1, s + i))]);
+    return { R, start: OT[Math.max(0, Math.min(OT.length - 1, s))], shift: s };
   }
 
   // demo drum track with known drift
@@ -315,15 +444,17 @@ const TA = (() => {
   // 0:15 살짝 느림, 0:33 꽤 느림, 0:57 크게 빠름 — 봐주는 범위 1~10%에서 점수가 약 50~100%로 고르게 변함
   const DEMO_PLAN = [[80, t => 100 + g(t, 15, 3, -2) + g(t, 33, 3.5, -5) + g(t, 57, 4.5, 9.5)]];
 
-  return { analyze, segments, synth, wav, DEMO_PLAN };
+  return { analyze, segments, segmentsArr, detectCuts, landings, songRefs, med, synth, wav, DEMO_PLAN };
 })();
 
 {
 const $=id=>document.getElementById(id);
 const SR=22050;
 let curId=null,lastPct=null,clicked=null,res=null,mult=1,dur=0,url=null,isDemo=true,lastX=null,geo=null,lastSeg=null,toastT=0,countT=0;
+let song=null,nudge=0,songInfo=null;
 const fmt=t=>{t=Math.max(0,t);const m=Math.floor(t/60),s=Math.floor(t%60);return m+':'+String(s).padStart(2,'0')};
 const status=h=>$('status').innerHTML=h;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 const IMG={pinch:['img/pinch.jpg?v=3','손을 들어 연주를 멈추는 플레처'],fist:['img/fist.jpg?v=3','주먹을 쥐고 씩 웃는 플레처'],rush:['img/rushing.jpg?v=3','‘Were you rushing or dragging?’이라고 소리치는 플레처'],mine:['img/mytempo.jpg?v=3','‘아니면 내 템포에 맞출 거야?’라고 소리치는 플레처']};
 const LINES=[
@@ -339,12 +470,23 @@ const SEGLINE={
   s:[['어디 산책 나왔냐?'],['느.려.졌.잖.아.'],['템포 맞추다 숨넘어가겠다 이 새끼야.']]
 };
 const SEGIMG=['pinch','rush','mine'];
-function lv(s){const r=Math.abs(s.peak)/res.thr;return r<1.8?0:r<2.6?1:2}
+// 변속 안착 한마디 (박 수 기준)
+const LANDLINE=[[2,'칼같이 들어왔네.'],[6,'들어오긴 했다.'],[16,'한참 헤맸잖아.'],[1e9,'끝까지 못 들어왔어.']];
+function lv(s){const r=Math.abs(s.peak)/res.thrB;return r<1.8?0:r<2.6?1:2}
 function say(s){const k=s.sign>0?'f':'s',l=lv(s);return{txt:SEGLINE[k][l][res.segs.indexOf(s)%SEGLINE[k][l].length],img:SEGIMG[l],k,l}}
 
-function reference(){
-  if($('refMode').value==='fix')return +$('fix').value||100;
-  const b=res.beats.map(x=>x.bpm*mult).sort((a,b)=>a-b);return b[b.length>>1];
+// 박마다 기준 BPM
+function refs(){
+  const bs=res.beats,v=bs.map(b=>b.bpm*mult),mode=$('refMode').value;
+  songInfo=null;
+  if(mode==='fix'){const f=+$('fix').value||100;return v.map(()=>f)}
+  if(mode==='song'&&song){const r=TA.songRefs(bs,song.beats,mult,nudge);if(r){songInfo=r;return r.R}}
+  const ok=(res.cuts||[]).filter(c=>c.ok===true).sort((a,b)=>a.i-b.i);
+  if(!ok.length||mode!=='med'){const m=TA.med(v);return v.map(()=>m)}
+  const out=new Array(v.length),idx=[0,...ok.map(c=>c.i),v.length];
+  if(res.tgt0==null)res.tgt0=Math.round(TA.med(v.slice(0,ok[0].i))*2)/2;
+  for(let s=0;s<idx.length-1;s++){const tg=s===0?res.tgt0:ok[s-1].tgt;for(let i=idx[s];i<idx[s+1];i++)out[i]=tg}
+  return out;
 }
 function setHero(pct){
   const [_,txt,im,pass]=LINES.find(l=>pct>=l[0]),hi=$('heroImg');
@@ -357,39 +499,77 @@ function verdict(pct){
   h.classList.remove('shake');void h.offsetWidth;if(!pass&&pct<90)h.classList.add('shake');
 }
 function render(shake){
-  if(!res||!res.beats.length){$('list').innerHTML='<div class="empty">박을 못 찾았어요. 드럼 소리가 또렷하게 들어갔는지, ‘대략 BPM’이 맞는지 봐 주세요.</div>';$('line').textContent='드럼이 안 들려. 다시 녹음해 와.';draw();return}
-  const ref=reference(),thrB=+$('thr').value,thr=thrB/ref*100,bs=res.beats;
-  const segs=TA.segments(bs,ref,thr,mult);
-  const inR=bs.filter(b=>Math.abs((b.bpm*mult-ref)/ref*100)<=thr).length;
+  if(!res||!res.beats.length){$('list').innerHTML='<div class="empty">박을 못 찾았어요. 드럼 소리가 또렷하게 들어갔는지, ‘대략 BPM’이 맞는지 봐 주세요.</div>';$('line').textContent='드럼이 안 들려. 다시 녹음해 와.';$('cutBox').hidden=$('landBox').hidden=true;draw();return}
+  const R=refs(),thrB=+$('thr').value,bs=res.beats,v=bs.map(b=>b.bpm*mult);
+  const segs=TA.segmentsArr(bs,R,thrB,mult);
+  const inR=v.filter((x,i)=>Math.abs(x-R[i])<=thrB).length;
   const jit=bs.map(b=>Math.abs(b.res)).sort((a,b)=>a-b)[bs.length>>1];
   const pct=Math.round(inR/bs.length*100);
-  $('rRef').textContent=ref.toFixed(1);$('rJit').textContent=jit.toFixed(0)+'ms';$('rSeg').textContent=segs.length+'곳';
-  res.segs=segs;res.ref=ref;res.thr=thr;res.thrB=thrB;lastPct=pct;
+  const rmin=Math.min(...R),rmax=Math.max(...R);
+  $('rRef').textContent=rmax-rmin<0.5?R[0].toFixed(1):`${Math.round(rmin)}~${Math.round(rmax)}`;
+  $('rJit').textContent=jit.toFixed(0)+'ms';$('rSeg').textContent=segs.length+'곳';
+  Object.assign(res,{segs,R,thrB,v});lastPct=pct;
   if(shake)verdict(pct);else setHero(pct);
-  $('list').innerHTML=segs.length?`<table class="stack"><thead><tr><th>구간</th><th>판정</th><th>평균 BPM</th><th>최대 차이</th><th>길이</th><th>한마디</th></tr></thead><tbody>${segs.map((s,i)=>{const k=s.sign>0?'f':'s',w=say(s);return`<tr data-t="${s.t0}" data-i="${i}"><td class="n">${fmt(s.t0)}–${fmt(s.t1)}</td><td><span class="tag ${k}">${s.sign>0?'빠름':'느림'}</span></td><td class="n">${s.avg.toFixed(1)}</td><td class="n">${s.peak>0?'+':''}${(s.peak*ref/100).toFixed(1)} BPM</td><td class="n">${s.n}박</td><td class="q"><img class="mini" src="${IMG[w.img][0]}" alt="">${w.txt}</td></tr>`}).join('')}</tbody></table>`
+  $('list').innerHTML=segs.length?`<table class="stack"><thead><tr><th>구간</th><th>판정</th><th>평균 BPM</th><th>최대 차이</th><th>길이</th><th>한마디</th></tr></thead><tbody>${segs.map((s,i)=>{const k=s.sign>0?'f':'s',w=say(s);return`<tr data-t="${s.t0}" data-i="${i}"><td class="n">${fmt(s.t0)}–${fmt(s.t1)}</td><td><span class="tag ${k}">${s.sign>0?'빠름':'느림'}</span></td><td class="n">${s.avg.toFixed(1)}</td><td class="n">${s.peak>0?'+':''}${s.peak.toFixed(1)} BPM</td><td class="n">${s.n}박</td><td class="q"><img class="mini" src="${IMG[w.img][0]}" alt="">${w.txt}</td></tr>`}).join('')}</tbody></table>`
     :'<div class="empty">걸린 데가 없네요. 봐주는 범위를 좁혀 보세요. 플레처라면 정확히 맞췄을 거예요.</div>';
+  renderCuts();renderLands();renderSongRow();
   draw();
 }
+function renderCuts(){
+  const show=$('refMode').value==='med'&&res.cuts&&res.cuts.length;
+  $('cutBox').hidden=!show;if(!show)return;
+  const ok=res.cuts.some(c=>c.ok===true);
+  let h=ok?`<div class="cut"><span class="n">${fmt(0)}</span><span>처음 목표</span><label class="tg"><input type="number" step="0.5" inputmode="decimal" data-k="first" value="${res.tgt0}"> BPM</label></div>`:'';
+  h+=res.cuts.map((c,k)=>{const t=fmt(res.beats[c.i].t),ft=`${Math.round(c.from)} → ${Math.round(c.to)} BPM`;
+    if(c.ok===true)return`<div class="cut on"><span class="n">${t}</span><span>${ft}</span><label class="tg">목표 <input type="number" step="0.5" inputmode="decimal" data-k="${k}" value="${c.tgt}"> BPM</label><button type="button" class="sm" data-undo="${k}">취소</button></div>`;
+    if(c.ok===false)return`<div class="cut off"><span class="n">${t}</span><span>${ft}</span><span class="mute">흔들린 걸로 침</span><button type="button" class="sm" data-undo="${k}">취소</button></div>`;
+    return`<div class="cut"><span class="n">${t}</span><span>${ft}</span><button type="button" class="sm yes" data-ok="${k}">변속 맞아</button><button type="button" class="sm" data-no="${k}">흔들린 거야</button></div>`}).join('');
+  $('cuts').innerHTML=h;
+}
+function renderLands(){
+  const L=res.R?TA.landings(res.R,res.v,res.thrB):[];
+  $('landBox').hidden=!L.length;if(!L.length)return;
+  $('lands').innerHTML=L.map(l=>{const w=LANDLINE.find(x=>(l.land<0?1e8:l.land)<=x[0])[1];
+    return`<div class="cut land" data-t="${res.beats[l.i].t}"><span class="n">${fmt(res.beats[l.i].t)}</span><span>${Math.round(l.from)} → ${Math.round(l.to)}</span><b>${l.land<0?'안착 못 함':l.land+'박'}</b><span class="mute">${w}</span></div>`}).join('');
+}
+function renderSongRow(){
+  const on=$('refMode').value==='song'&&!!song&&!!songInfo;
+  $('nudgeRow').hidden=!on;
+  if(on)$('alignInfo').textContent=`내 첫 박 = 원곡 ${fmt(songInfo.start)}`+(nudge?` (${nudge>0?'+':''}${nudge}박)`:'');
+}
+async function saveCuts(){if(!curId)return;try{const t=await DB.get('takes',curId);if(t){t.cuts=res.cuts.map(c=>({i:c.i,ok:c.ok,tgt:c.tgt}));t.tgt0=res.tgt0;await DB.put('takes',t)}}catch(e){}}
+$('cuts').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.ok!=null){const c=res.cuts[+d.ok];c.ok=true;c.tgt=c.tgt??Math.round(c.to*2)/2;res.tgt0=null}
+  else if(d.no!=null)res.cuts[+d.no].ok=false;
+  else if(d.undo!=null){res.cuts[+d.undo].ok=null;res.tgt0=null}
+  render(true);saveCuts();
+});
+$('cuts').addEventListener('change',e=>{const i=e.target.closest('input');if(!i)return;const v=+i.value;if(!(v>20))return;
+  if(i.dataset.k==='first')res.tgt0=v;else res.cuts[+i.dataset.k].tgt=v;render(true);saveCuts()});
+$('lands').addEventListener('click',e=>{const r=e.target.closest('[data-t]');if(r)play(+r.dataset.t-3)});
+
 function draw(){
   const s=$('svg'),W=s.clientWidth,H=s.clientHeight;
   if(!res||!res.beats.length){s.innerHTML='';return}
-  const narrow=W<520,L=narrow?44:50,R=12,T=14,B=26,bs=res.beats,ref=res.ref,thr=res.thr;
-  const devs=bs.map(b=>Math.abs(b.bpm*mult-ref)/ref*100);
-  const span=Math.min(25,Math.max(thr*2.4,Math.max(...devs)*1.15));
-  const y0=ref*(1-span/100),y1=ref*(1+span/100);
-  const X=t=>L+(W-L-R)*t/dur,Y=v=>T+(H-T-B)*(1-(v-y0)/(y1-y0)),cl=v=>Math.max(y0,Math.min(y1,v));
+  const narrow=W<520,L=narrow?44:50,R=12,T=14,B=26,bs=res.beats,Rf=res.R,tb=res.thrB,v=res.v;
+  const sv=[...v].sort((a,b)=>a-b),lo0=Math.min(sv[Math.floor(sv.length*.02)],Math.min(...Rf)-tb),hi0=Math.max(sv[Math.floor(sv.length*.98)],Math.max(...Rf)+tb);
+  const pad=Math.max(2,(hi0-lo0)*.12),y0=lo0-pad,y1=hi0+pad;
+  const X=t=>L+(W-L-R)*t/dur,Y=q=>T+(H-T-B)*(1-(q-y0)/(y1-y0)),cl=q=>Math.max(y0,Math.min(y1,q));
   geo={L,R,W};
-  let g=`<rect x="${L}" y="${Y(ref*(1+thr/100))}" width="${W-L-R}" height="${Y(ref*(1-thr/100))-Y(ref*(1+thr/100))}" fill="var(--band)"/>`;
+  const xs=bs.map(b=>X(b.t).toFixed(1));
+  let g=`<polygon points="${xs.map((x,i)=>x+','+Y(Rf[i]+tb).toFixed(1)).join(' ')} ${xs.map((x,i)=>x+','+Y(Rf[i]-tb).toFixed(1)).reverse().join(' ')}" fill="var(--band)"/>`;
   for(const sg of res.segs)g+=`<rect x="${X(sg.t0)}" y="${T}" width="${Math.max(3,X(sg.t1)-X(sg.t0))}" height="${H-T-B}" fill="${sg.sign>0?'var(--fast)':'var(--slow)'}" opacity=".2"/>`;
-  g+=`<line x1="${L}" x2="${W-R}" y1="${Y(ref)}" y2="${Y(ref)}" stroke="var(--mute)" stroke-dasharray="4 4"/>`;
-  const ts=[0.5,1,2,5,10,20,50].find(v=>(y1-y0)/v<=(narrow?5:7))||50;
-  for(let v=Math.ceil(y0/ts)*ts;v<=y1+1e-9;v+=ts)g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)" stroke-width=".6"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--mute)">${+v.toFixed(1)}</text>`;
-  g+=`<text x="${W-R-6}" y="${Y(ref)-6}" text-anchor="end" font-size="11" fill="var(--mute)">기준 ${ref.toFixed(1)} · ±${res.thrB}</text>`;
+  const ts=[0.5,1,2,5,10,20,50].find(q=>(y1-y0)/q<=(narrow?5:7))||50;
+  for(let q=Math.ceil(y0/ts)*ts;q<=y1+1e-9;q+=ts)g+=`<line x1="${L}" x2="${W-R}" y1="${Y(q)}" y2="${Y(q)}" stroke="var(--line)" stroke-width=".6"/><text x="${L-6}" y="${Y(q)+4}" text-anchor="end" font-size="11" fill="var(--mute)">${+q.toFixed(1)}</text>`;
+  g+=`<polyline points="${xs.map((x,i)=>x+','+Y(Rf[i]).toFixed(1)).join(' ')}" fill="none" stroke="var(--mute)" stroke-width="1.4" stroke-dasharray="5 4"/>`;
+  const flat=Math.max(...Rf)-Math.min(...Rf)<0.5;
+  g+=`<text x="${W-R-6}" y="${T+12}" text-anchor="end" font-size="11" fill="var(--mute)">${flat?'기준 '+Rf[0].toFixed(1)+' · ':($('refMode').value==='song'?'원곡 따라감 · ':'변속 반영 · ')}±${tb}</text>`;
   const step=dur>300?60:dur>120?30:dur>40?15:5;
   for(let t=0;t<=dur;t+=step*(narrow&&dur/step>6?2:1))g+=`<text x="${X(t)}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--mute)">${fmt(t)}</text>`;
-  g+=`<polyline points="${bs.map(b=>X(b.t).toFixed(1)+','+Y(cl(b.bpm*mult)).toFixed(1)).join(' ')}" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>`;
-  for(const b of bs){const d=(b.bpm*mult-ref)/ref*100;if(Math.abs(d)>thr)g+=`<circle cx="${X(b.t)}" cy="${Y(cl(b.bpm*mult))}" r="2.8" fill="${d>0?'var(--fast)':'var(--slow)'}"/>`}
-  g+=`<line id="ph" x1="${L}" x2="${L}" y1="${T}" y2="${H-B}" stroke="#fff" stroke-width="1.5" opacity="0"/><text id="phl" x="${L}" y="${T+14}" font-size="15" font-family="Anton,sans-serif" fill="#fff" opacity="0"></text>`;
+  g+=`<polyline points="${xs.map((x,i)=>x+','+Y(cl(v[i])).toFixed(1)).join(' ')}" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>`;
+  v.forEach((q,i)=>{const d=q-Rf[i];if(Math.abs(d)>tb)g+=`<circle cx="${xs[i]}" cy="${Y(cl(q))}" r="2.8" fill="${d>0?'var(--fast)':'var(--slow)'}"/>`});
+  g+=`<line id="ph" x1="${L}" x2="${L}" y1="${T}" y2="${H-B}" stroke="#fff" stroke-width="1.5" opacity="0"/><text id="phl" x="${L}" y="${T+30}" font-size="15" font-family="Anton,sans-serif" fill="#fff" opacity="0"></text>`;
   s.innerHTML=g;movePh();
 }
 function toast(sg){
@@ -414,7 +594,7 @@ $('aud').addEventListener('timeupdate',movePh);$('aud').addEventListener('seeked
 $('aud').addEventListener('play',()=>{const f=()=>{movePh();if(!$('aud').paused)requestAnimationFrame(f)};f()});
 $('toast').addEventListener('click',()=>$('toast').classList.remove('on'));
 
-function run(x){
+function run(x,saved){
   lastX=x;
   const words=['5,','6,','5, 6,','7,','8!'];let i=0;
   clearInterval(countT);status('<span class="count">5,</span> 카운트 들어간다…');
@@ -423,9 +603,13 @@ function run(x){
     try{
       const t0=performance.now();
       res=TA.analyze(x,SR,{hint:+$('hint').value||110});
-      dur=res.dur;mult=1;clearInterval(countT);
-      status((isDemo?'지금 보이는 건 예시로 만든 가짜 드럼 녹음이에요. 봐주는 범위(BPM)를 움직이면 점수랑 짤이 바뀌어요. ':'')+`박 ${res.beats.length}개 찾음 · ${((performance.now()-t0)/1000).toFixed(1)}초 걸림`);
-      render(true);if(curId)DB.put&&saveScore(curId,lastPct);
+      dur=res.dur;mult=1;nudge=0;
+      res.cuts=TA.detectCuts(res.beats.map(b=>b.bpm),+$('thr').value).map(c=>({...c,ok:null,tgt:null}));
+      if(saved&&saved.cuts)for(const s of saved.cuts){const c=res.cuts.find(c=>Math.abs(c.i-s.i)<=4);if(c){c.ok=s.ok;c.tgt=s.tgt}}
+      if(saved&&saved.tgt0!=null)res.tgt0=saved.tgt0;
+      clearInterval(countT);
+      status((isDemo?'지금 보이는 건 예시로 만든 가짜 드럼 녹음이에요. 봐주는 범위(BPM)를 움직이면 점수랑 짤이 바뀌어요. ':'')+`박 ${res.beats.length}개 찾음 · ${((performance.now()-t0)/1000).toFixed(1)}초 걸림`+(res.cuts.length?` · 변속 후보 ${res.cuts.length}곳`:''));
+      render(true);if(curId)saveScore(curId,lastPct);
     }catch(err){clearInterval(countT);status('분석하다가 오류가 났어요: '+err.message)}
   },400);
 }
@@ -450,32 +634,56 @@ $('file').addEventListener('change',async e=>{
   e.target.value='';
 });
 $('hint').addEventListener('change',()=>{if(lastX)run(lastX)});
-$('refMode').addEventListener('change',()=>{$('fixWrap').hidden=$('refMode').value!=='fix';render(true)});
+$('refMode').addEventListener('change',()=>{const m=$('refMode').value;$('fixWrap').hidden=m!=='fix';$('songBox').hidden=m!=='song';if(m==='song')refreshSongs();render(true)});
 $('fix').addEventListener('change',()=>render(true));
 $('thr').addEventListener('input',()=>{$('thrOut').textContent=$('thr').value;render(false)});
 $('thr').addEventListener('change',()=>render(true));
 $('half').addEventListener('click',()=>{mult/=2;render(true)});
 $('dbl').addEventListener('click',()=>{mult*=2;render(true)});
+$('nb').addEventListener('click',()=>{nudge--;render(false)});
+$('nf').addEventListener('click',()=>{nudge++;render(false)});
 
-// ---- 내 녹음 (IndexedDB) ----
-const DB=(()=>{let pr=null;const open=()=>pr||(pr=new Promise((ok,no)=>{try{const r=indexedDB.open('nqmt',1);r.onupgradeneeded=()=>r.result.createObjectStore('takes',{keyPath:'id'});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}catch(e){no(e)}}));
-  const tx=async(mode,fn)=>{const d=await open();return new Promise((ok,no)=>{const t=d.transaction('takes',mode);const r=fn(t.objectStore('takes'));t.oncomplete=()=>ok(r&&r.result);t.onerror=()=>no(t.error)})};
-  return{put:v=>tx('readwrite',s=>s.put(v)),all:()=>tx('readonly',s=>s.getAll()),get:id=>tx('readonly',s=>s.get(id)),del:id=>tx('readwrite',s=>s.delete(id))}})();
-async function addTake(blob,d){try{const id=Date.now();await DB.put({id,type:blob.type||'audio/mp4',buf:await blob.arrayBuffer(),dur:d,score:null,name:blob.name||''});try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}refreshTakes();return id}catch(e){return null}}
-async function saveScore(id,sc){try{const t=await DB.get(id);if(t){t.score=sc;await DB.put(t);refreshTakes()}}catch(e){}}
+// ---- 저장소 (IndexedDB): 내 녹음 + 원곡 ----
+const DB=(()=>{let pr=null;const open=()=>pr||(pr=new Promise((ok,no)=>{try{const r=indexedDB.open('nqmt',2);r.onupgradeneeded=()=>{const d=r.result;for(const n of ['takes','songs'])if(!d.objectStoreNames.contains(n))d.createObjectStore(n,{keyPath:'id'})};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}catch(e){no(e)}}));
+  const tx=async(st,mode,fn)=>{const d=await open();return new Promise((ok,no)=>{const t=d.transaction(st,mode);const r=fn(t.objectStore(st));t.oncomplete=()=>ok(r&&r.result);t.onerror=()=>no(t.error)})};
+  return{put:(st,v)=>tx(st,'readwrite',s=>s.put(v)),all:st=>tx(st,'readonly',s=>s.getAll()),get:(st,id)=>tx(st,'readonly',s=>s.get(id)),del:(st,id)=>tx(st,'readwrite',s=>s.delete(id))}})();
+async function addTake(blob,d){try{const id=Date.now();await DB.put('takes',{id,type:blob.type||'audio/mp4',buf:await blob.arrayBuffer(),dur:d,score:null,name:blob.name||''});try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}refreshTakes();return id}catch(e){return null}}
+async function saveScore(id,sc){try{const t=await DB.get('takes',id);if(t){t.score=sc;await DB.put('takes',t);refreshTakes()}}catch(e){}}
 const dt=ms=>{const d=new Date(ms);return`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
 async function refreshTakes(){
-  try{const all=(await DB.all()).sort((a,b)=>b.id-a.id);$('takesBox').hidden=!all.length;$('takeN').textContent=all.length+'개';
+  try{const all=(await DB.all('takes')).sort((a,b)=>b.id-a.id);$('takesBox').hidden=!all.length;$('takeN').textContent=all.length+'개';
     $('takes').innerHTML=all.map(t=>`<div class="take" data-id="${t.id}"><button type="button" class="open${t.id===curId?' cur':''}"><span>${dt(t.id)}</span><span style="color:var(--mute)">${fmt(t.dur)}</span><span class="sc">${t.score==null?'–':t.score+'%'}</span></button><button type="button" class="del">삭제</button></div>`).join('')}catch(e){$('takesBox').hidden=true}
 }
 $('takes').addEventListener('click',async e=>{
   const row=e.target.closest('.take');if(!row)return;const id=+row.dataset.id;
   const del=e.target.closest('.del');
   if(del){if(!del.classList.contains('sure')){del.classList.add('sure');del.textContent='정말?';setTimeout(()=>{del.classList.remove('sure');del.textContent='삭제'},2500);return}
-    try{await DB.del(id)}catch(err){}if(curId===id)curId=null;refreshTakes();return}
-  try{status('녹음을 여는 중…');const t=await DB.get(id);const blob=new Blob([t.buf],{type:t.type});const x=await decode(blob);
-    isDemo=false;curId=id;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(blob);$('aud').src=url;run(x);refreshTakes();window.scrollTo({top:0,behavior:'smooth'})}
+    try{await DB.del('takes',id)}catch(err){}if(curId===id)curId=null;refreshTakes();return}
+  try{status('녹음을 여는 중…');const t=await DB.get('takes',id);const blob=new Blob([t.buf],{type:t.type});const x=await decode(blob);
+    isDemo=false;curId=id;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(blob);$('aud').src=url;run(x,t);refreshTakes();window.scrollTo({top:0,behavior:'smooth'})}
   catch(err){status('이 녹음은 못 열겠어요.')}
+});
+let lastSongId=null;try{lastSongId=+localStorage.getItem('nqmt-song')||null}catch(e){}
+async function refreshSongs(){
+  try{const all=(await DB.all('songs')).sort((a,b)=>b.id-a.id);
+    $('song').innerHTML=all.length?all.map(s=>`<option value="${s.id}">${esc(s.name)} · ${Math.round(s.med)} BPM</option>`).join(''):'<option value="">원곡을 올려 주세요</option>';
+    $('song').disabled=!all.length;
+    const pick=all.find(s=>s.id===(song&&song.id))||all.find(s=>s.id===lastSongId)||all[0]||null;
+    if(pick){$('song').value=pick.id}song=pick;if(res)render(false);
+  }catch(e){}
+}
+$('song').addEventListener('change',async()=>{try{song=await DB.get('songs',+$('song').value);nudge=0;try{localStorage.setItem('nqmt-song',song.id)}catch(e){}render(true)}catch(e){}});
+$('songFile').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;e.target.value='';
+  status('원곡 템포를 재는 중… 곡이 길면 조금 걸려요.');
+  try{const x=await decode(f);await new Promise(r=>setTimeout(r,30));
+    const r=TA.analyze(x,SR,{hint:+$('hint').value||110});
+    if(r.beats.length<16)throw 0;
+    const id=Date.now(),name=f.name.replace(/\.[^.]+$/,'');
+    await DB.put('songs',{id,name,beats:r.beats.map(b=>({t:+b.t.toFixed(3),bpm:+b.bpm.toFixed(2)})),med:TA.med(r.beats.map(b=>b.bpm)),dur:r.dur});
+    song=await DB.get('songs',id);nudge=0;try{localStorage.setItem('nqmt-song',id)}catch(e){}
+    await refreshSongs();status(`원곡 ‘${esc(name)}’ 저장했어요. 박 ${r.beats.length}개.`);
+  }catch(err){status('원곡을 못 읽었어요. m4a, mp3, wav 파일인지 봐 주세요.')}
 });
 refreshTakes();
 

@@ -192,7 +192,7 @@ h2{font-size:24px}
 <div class="panel">
   <p class="pnote" style="margin-top:0">원곡과 내 녹음은 이 폰의 브라우저 안에 저장돼요. 사파리에서 그냥 열어 쓰면, 7일 동안 안 들어올 경우 사파리가 지워 버릴 수 있어요. <b>공유 → 홈 화면에 추가</b>해서 그 아이콘으로 열면 이 규칙에서 빠져요. 그래도 폰을 바꾸거나 할 때를 위해 가끔 백업 파일을 만들어 두세요.</p>
   <p id="storeInfo" class="pnote"></p>
-  <p class="pnote">앱 버전 11/24 20:52</p>
+  <p class="pnote">앱 버전 11/26 14:29</p>
   <div class="bk"><button type="button" id="bkOut">백업 파일 만들기</button><label class="file small"><span>백업 불러오기</span><input type="file" id="bkIn"></label></div>
 </div>
 </div>
@@ -397,7 +397,29 @@ const TA = (() => {
     const hint = opt.hint || 110;
     const { env, fps, envH } = onsetEnvelope(x, sr);
     // 원곡을 알면 그 템포를 출발점으로 그대로 씀 (짧은 연주는 자기상관이 엇박 패턴에 속기 쉬움)
-    const P = opt.strict ? 60 * fps / hint : estimatePeriod(env, fps, hint, false);
+    let P = opt.strict ? 60 * fps / hint : estimatePeriod(env, fps, hint, false);
+    // 박 묶음 바로잡기: 가장 촘촘하고 일정한 단위(보통 16분음)를 찾아, 박은 그 단위 2·3·4·8개로만 묶음
+    // (16비트만 계속 치면 5·6개 묶음도 주기처럼 보여서 160을 106.7로, 130을 104로 잘못 세던 문제)
+    let tatum = null;
+    if (!opt.strict) {
+      const hs = pickHits(envH, fps, 0);
+      const io = hs.slice(1).map((t, i) => t - hs[i]).filter(d => d > 0.06 && d < 0.6).sort((p, q) => p - q);
+      if (io.length > 24) {
+        const p20 = io[Math.floor(io.length * 0.2)], q = med(io.filter(d => d < p20 * 1.4));
+        const reg = io.filter(d => { const r = d / q, k = Math.round(r); return k >= 1 && k <= 4 && Math.abs(r - k) < 0.15; }).length / io.length;
+        if (reg > 0.7) {
+          tatum = q;
+          const bpmOf = n => 60 / (n * q), cur = 60 * fps / P;
+          let want;
+          if (q < 0.15 && bpmOf(4) >= 60 && bpmOf(4) <= 220) want = bpmOf(4);
+          else {
+            const cands = [2, 3, 4].map(bpmOf).filter(b => b >= 55 && b <= 210);
+            if (cands.length) want = cands.reduce((a, b) => Math.abs(Math.log2(b / hint)) < Math.abs(Math.log2(a / hint)) ? b : a);
+          }
+          if (want && Math.abs(Math.log(cur / want)) > Math.log(1.08)) P = 60 * fps / want;
+        }
+      }
+    }
     // 1차: 느슨하게 묶어 전체 흐름을 봄. 크게 확 바뀌는 변속이 있으면 그 흐름(구간별 박 간격)을 기준으로 단단히 묶고,
     // 없으면(출렁이기만 하는 곡) 곡 전체 박 간격 기준으로 단단히 묶음 — 이쪽이 실제 합주 녹음에서 더 정확함
     const loose = trackBeats(env, P, 40);
@@ -447,7 +469,7 @@ const TA = (() => {
       return { t: b.t, bpm, res: (b.t - (ic + sl * i)) * 1000 };
     });
     const hits = pickHits(envH, fps, N / (2 * sr));
-    return { beats: out, period: P, fps, dur: x.length / sr, env, mode, hits, grid: hitGrid(hits, out) };
+    return { beats: out, period: P, fps, dur: x.length / sr, env, mode, hits, grid: hitGrid(hits, out), tatum };
   }
 
   // group beats whose tempo is off the reference into segments
@@ -860,7 +882,8 @@ $('file').addEventListener('change',async e=>{
   }catch(err){status(/\.qta$/i.test(f.name)?'이 녹음(.qta)은 못 열었어요. 음성 메모에서 녹음을 덧씌운 경우 이렇게 될 수 있어요. 앞으로는 ‘녹음 시작’으로 여기서 바로 녹음해 주세요.':'이 파일은 못 열겠어요. 소리 파일(m4a, mp3, wav)인지 봐 주세요.')}
   e.target.value='';
 });
-$('hint').addEventListener('change',()=>{if(lastX)run(lastX)});
+try{const h=localStorage.getItem('nqmt-hint');if(h)$('hint').value=h}catch(e){}
+$('hint').addEventListener('change',()=>{try{localStorage.setItem('nqmt-hint',$('hint').value)}catch(e){}if(lastX)run(lastX)});
 $('refMode').addEventListener('change',()=>{const m=$('refMode').value;$('fixWrap').hidden=m!=='fix';refreshSongs();if(!reSong())render(true)});
 $('fix').addEventListener('change',()=>render(true));
 $('thr').addEventListener('input',()=>{$('thrOut').textContent=$('thr').value;render(false)});
